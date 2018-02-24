@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/primary_background"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:context="com.debdroid.popularmovies.MovieList">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_movie_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tv_error_message_display"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+            android:padding="@dimen/error_msg_text_Padding"
+            android:textColor="@color/primary_text"
+            android:text="@string/error_msg"
+            android:visibility="invisible"/>
+
+        <ProgressBar
+            android:id="@+id/pb_loading_indicator"
+            android:layout_width="@dimen/progress_loading_indicator_height_and_width"
+            android:layout_height="@dimen/progress_loading_indicator_height_and_width"
+            android:layout_gravity="center"
+            android:visibility="invisible" />
+    </FrameLayout>
+</LinearLayout>

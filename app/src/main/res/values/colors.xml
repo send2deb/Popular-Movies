@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary_light">#EEEEEE</color>            <!-- 200 -->
+    <color name="primary_dialog_n_card">#424242</color>    <!-- 800 (dialog & card)-->
+    <color name="primary_background">#303030</color>       <!-- ??? (background)-->
+    <color name="primary">#212121</color>                  <!-- 900 (app bar)-->
+    <color name="primary_dark">#000000</color>             <!-- ??? (status bar)-->
+    <color name="accent">#FF5252</color>                   <!-- 200 -->
+    <color name="primary_text">#FFFFFF</color>
+    <color name="secondary_text">#B3FFFFFF</color>
+    <color name="disable_hint_text">#80FFFFFF</color>
+    <color name="divider_color">#33FFFFFF</color>
+</resources>
