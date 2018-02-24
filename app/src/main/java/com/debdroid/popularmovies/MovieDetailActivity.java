@@ -8,7 +8,7 @@ import android.widget.TextView;
 import com.debdroid.popularmovies.utils.DateUtils;
 import com.squareup.picasso.Picasso;
 
-public class MovieDetail extends AppCompatActivity {
+public class MovieDetailActivity extends AppCompatActivity {
 
     public static final String MOVIE_TITLE_EXTRA_KEY = "movie_title";
     public static final String MOVIE_RELEASE_DATE_EXTRA_KEY = "movie_release_date";

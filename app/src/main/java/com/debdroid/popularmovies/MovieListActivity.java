@@ -2,6 +2,7 @@ package com.debdroid.popularmovies;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
@@ -9,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,10 +28,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MovieList extends AppCompatActivity implements LoaderManager.LoaderCallbacks<String>,
+public class MovieListActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<String>,
         MovieAdapter.MovieGAdapterOnClickHandler {
 
-    private final static String LOG_TAG = MovieList.class.getSimpleName();
+    private final static String LOG_TAG = MovieListActivity.class.getSimpleName();
 
     /* A constant to save and restore the URL that is being displayed */
     private static final String TMDB_QUERY_URL_EXTRA = "query";
@@ -62,7 +64,8 @@ public class MovieList extends AppCompatActivity implements LoaderManager.Loader
         mProgressBar = findViewById(R.id.pb_loading_indicator);
         mRecyclerView = findViewById(R.id.rv_movie_list);
         mMovieAdapter = new MovieAdapter(this, this);
-        mMovieGridLayoutManager = new GridLayoutManager(this, 3,
+        int spanCount = determineNumOfColumns();
+        mMovieGridLayoutManager = new GridLayoutManager(this, spanCount,
                 GridLayoutManager.VERTICAL, false);
         mMovieGridLayoutManager.setAutoMeasureEnabled(true);
         mRecyclerView.setLayoutManager(mMovieGridLayoutManager);
@@ -79,8 +82,11 @@ public class MovieList extends AppCompatActivity implements LoaderManager.Loader
          */
         getSupportLoaderManager().initLoader(TMDB_MOVIES_LOADER, null, this);
 
-        // Default sort category is most popular
-        mSortCategory = TMDB_POPULAR_MOVIE_CATEGORY;
+        // Retrieve the sort type from SharedPreference. If nothing is present then use most popular
+        // as default sort category
+        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+        mSortCategory = sharedPref.getString(getString(R.string.pref_user_sort_type_key),
+                TMDB_POPULAR_MOVIE_CATEGORY);
         makeTmdbMovieQuery();
     }
 
@@ -100,10 +106,12 @@ public class MovieList extends AppCompatActivity implements LoaderManager.Loader
                 return true;
             case R.id.menu_action_sort_most_popular:
                 mSortCategory = TMDB_POPULAR_MOVIE_CATEGORY;
+                storeUserSortPreference(TMDB_POPULAR_MOVIE_CATEGORY);
                 makeTmdbMovieQuery();
                 return true;
             case R.id.menu_action_sort_highest_rated:
                 mSortCategory = TMDB_TOP_RATED_MOVIE_CATEGORY;
+                storeUserSortPreference(TMDB_TOP_RATED_MOVIE_CATEGORY);
                 makeTmdbMovieQuery();
                 return true;
             default:
@@ -139,6 +147,31 @@ public class MovieList extends AppCompatActivity implements LoaderManager.Loader
         } else {
             loaderManager.restartLoader(TMDB_MOVIES_LOADER, queryBundle, this);
         }
+    }
+
+    /**
+     * This method writes the user sort preference to SharedPreference file
+     * @param sortCategory The sort category selected by the user
+     */
+    private void storeUserSortPreference(String sortCategory) {
+        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(getString(R.string.pref_user_sort_type_key),sortCategory);
+        editor.apply(); // Use apply to writhe the value asynchronously
+    }
+
+    /**
+     * This method dynamically determines the number of column for the recycler view based on
+     * screen width and density
+     * @return number of calculated columns
+     */
+    private int determineNumOfColumns() {
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+        int columnWidth = (int) (getResources().getDimension(R.dimen.single_movie_image_width) /
+                        displayMetrics.density);
+        int numOfColumn = (int) dpWidth / columnWidth;
+        return numOfColumn;
     }
 
     @Override
@@ -185,19 +218,19 @@ public class MovieList extends AppCompatActivity implements LoaderManager.Loader
      */
     @Override
     public void onMovieItemClick(int position) {
-        Intent startMovieDetailIntent = new Intent(this, MovieDetail.class);
+        Intent startMovieDetailIntent = new Intent(this, MovieDetailActivity.class);
         Bundle bundle = new Bundle();
-        bundle.putString(MovieDetail.MOVIE_TITLE_EXTRA_KEY, mMovieList.get(position)
+        bundle.putString(MovieDetailActivity.MOVIE_TITLE_EXTRA_KEY, mMovieList.get(position)
                 .getmOriginalTitle());
-        bundle.putString(MovieDetail.MOVIE_RELEASE_DATE_EXTRA_KEY, mMovieList.get(position)
+        bundle.putString(MovieDetailActivity.MOVIE_RELEASE_DATE_EXTRA_KEY, mMovieList.get(position)
                 .getmReleaseDate());
-        bundle.putString(MovieDetail.MOVIE_POSTER_PATH_EXTRA_KEY, mMovieList.get(position)
+        bundle.putString(MovieDetailActivity.MOVIE_POSTER_PATH_EXTRA_KEY, mMovieList.get(position)
                 .getmPosterImage());
-        bundle.putDouble(MovieDetail.MOVIE_VOTE_AVERAGE_EXTRA_KEY, mMovieList.get(position)
+        bundle.putDouble(MovieDetailActivity.MOVIE_VOTE_AVERAGE_EXTRA_KEY, mMovieList.get(position)
                 .getmUserRating());
-        bundle.putString(MovieDetail.MOVIE_PLOT_SYNOPSIS_EXTRA_KEY, mMovieList.get(position)
+        bundle.putString(MovieDetailActivity.MOVIE_PLOT_SYNOPSIS_EXTRA_KEY, mMovieList.get(position)
                 .getmPlotSynopsis());
-        bundle.putString(MovieDetail.MOVIE_BACKDROP_PATH_EXTRA_KEY, mMovieList.get(position)
+        bundle.putString(MovieDetailActivity.MOVIE_BACKDROP_PATH_EXTRA_KEY, mMovieList.get(position)
                 .getmBackdropImage());
         startMovieDetailIntent.putExtras(bundle);
         startActivity(startMovieDetailIntent);

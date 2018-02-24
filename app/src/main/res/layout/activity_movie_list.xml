@@ -6,7 +6,7 @@
     android:background="@color/primary_background"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context="com.debdroid.popularmovies.MovieList">
+    tools:context="com.debdroid.popularmovies.MovieListActivity">
 
     <FrameLayout
         android:layout_width="match_parent"

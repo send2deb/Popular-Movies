@@ -11,4 +11,6 @@
     <string name="detail_backdrop_content_description">Movie Backdrop Image</string>
     <string name="detail_poster_content_description">Movie Poster Image</string>
 
+    <!-- SharedPreference key to store the sort type -->
+    <string name="pref_user_sort_type_key">sort_type</string>
 </resources>
