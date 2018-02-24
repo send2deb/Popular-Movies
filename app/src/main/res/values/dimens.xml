@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="card_view_elevation">2dp</dimen>
+    <dimen name="card_view_corner_radius">2dp</dimen>
+    <dimen name="single_movie_image_height">160dp</dimen>
+    <dimen name="single_movie_image_width">115dp</dimen>
+    <dimen name="grid_text_padding">8dp</dimen>
+    <dimen name="backdrop_image_height">200dp</dimen>
+    <dimen name="progress_loading_indicator_height_and_width">50dp</dimen>
+    <dimen name="error_msg_text_Padding">16dp</dimen>
+
+</resources>

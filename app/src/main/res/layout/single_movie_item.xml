@@ -1,0 +1,44 @@
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:cardview="http://schemas.android.com/apk/res-auto"
+    xmlns:tool="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    cardview:cardBackgroundColor="@color/primary"
+    cardview:cardCornerRadius="@dimen/card_view_corner_radius"
+    cardview:cardElevation="@dimen/card_view_elevation"
+    cardview:cardUseCompatPadding="true"
+    android:background="@drawable/item_touch_selector"
+    android:foreground="?android:attr/selectableItemBackground">
+
+    <RelativeLayout
+        android:layout_width="@dimen/single_movie_image_width"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/iv_single_movie_poster_image"
+            android:layout_width="@dimen/single_movie_image_width"
+            android:layout_height="@dimen/single_movie_image_height"
+            android:contentDescription="@string/grid_image_view_content_description"
+            android:gravity="center"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/ic_launcher" />
+
+        <TextView
+            android:id="@+id/tv_single_movie_original_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/iv_single_movie_poster_image"
+            android:background="@color/primary"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif"
+            android:gravity="center"
+            android:maxLines="1"
+            android:padding="@dimen/grid_text_padding"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColor="@color/primary_text"
+            android:textStyle="italic"
+            tool:text="Movie name"/>
+    </RelativeLayout>
+</android.support.v7.widget.CardView>
