@@ -122,6 +122,35 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_plot_synopsis_label"
             tools:text="This is the synposis of the movie" />
+
+        <TextView
+            android:id="@+id/tv_user_favourite_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/detail_movie_user_favourite_label"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.08"
+            app:layout_constraintStart_toEndOf="@+id/iv_poster_image"
+            app:layout_constraintTop_toBottomOf="@+id/tv_vote_average_data" />
+
+        <ImageButton
+            android:id="@+id/ib_user_favourite"
+            android:layout_width="@dimen/user_favourite_image_button_width_and_height"
+            android:layout_height="@dimen/user_favourite_image_button_width_and_height"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:contentDescription="@string/favourite_image_button_content_description"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.1"
+            android:background="@color/color_white"
+            app:layout_constraintStart_toEndOf="@+id/iv_poster_image"
+            app:layout_constraintTop_toBottomOf="@+id/tv_user_favourite_label"
+            app:srcCompat="@drawable/ic_user_favourite" />
     </android.support.constraint.ConstraintLayout>
 </ScrollView>
 

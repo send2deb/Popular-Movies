@@ -8,5 +8,6 @@
     <dimen name="backdrop_image_height">200dp</dimen>
     <dimen name="progress_loading_indicator_height_and_width">50dp</dimen>
     <dimen name="error_msg_text_Padding">16dp</dimen>
+    <dimen name="user_favourite_image_button_width_and_height">48dp</dimen>
 
 </resources>

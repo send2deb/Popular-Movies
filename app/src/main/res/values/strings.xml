@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Popular Movies</string>
+    <string name="content_authority">com.debdroid.popularmovies</string>
     <string name="grid_image_view_content_description">Movie poster image</string>
     <string name="menu_action_sort">Sort</string>
     <string name="menu_action_sort_most_popular">Most Popular</string>
@@ -7,9 +8,11 @@
     <string name="detail_movie_release_date_label">Release Date:</string>
     <string name="detail_movie_vote_average_label">Vote Average:</string>
     <string name="detail_movie_plot_synopsis_label">Synopsis:</string>
+    <string name="detail_movie_user_favourite_label">User Favourite:</string>
     <string name="error_msg">Something went wrong, so couldn\'t retrieve any data</string>
     <string name="detail_backdrop_content_description">Movie Backdrop Image</string>
     <string name="detail_poster_content_description">Movie Poster Image</string>
+    <string name="favourite_image_button_content_description">User Favourite Button</string>
 
     <!-- SharedPreference key to store the sort type -->
     <string name="pref_user_sort_type_key">sort_type</string>

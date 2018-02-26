@@ -9,6 +9,7 @@
 
 
     <application
+        android:name=".application.MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -29,6 +30,12 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MovieListActivity" />
         </activity>
+    <!-- Register the Popular Movie Contnet Provider content provider -->
+    <provider
+        android:name=".contentprovider.PopularMovieProvider"
+        android:authorities="@string/content_authority"
+        android:exported="false"
+        android:syncable="true" />
     </application>
 
 </manifest>

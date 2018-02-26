@@ -5,6 +5,7 @@ package com.debdroid.popularmovies.model;
  */
 
 public class Movie {
+    private int mMovieId;
     private String mOriginalTitle;
     private String mPosterImage;
     private String mPlotSynopsis;
@@ -28,6 +29,14 @@ public class Movie {
         this.mPlotSynopsis = mPlotSynopsis;
         this.mUserRating = mUserRating;
         this.mBackdropImage = mBackdropImage;
+    }
+
+    public int getmMovieId() {
+        return mMovieId;
+    }
+
+    public void setmMovieId(int mMovieId) {
+        this.mMovieId = mMovieId;
     }
 
     public String getmOriginalTitle() {

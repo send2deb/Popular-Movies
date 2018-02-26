@@ -16,6 +16,7 @@ public class JsonUtils {
     private final static String LOG_TAG = JsonUtils.class.getSimpleName();
 
     private static final String JSON_RESULTS_KEY = "results";
+    private static final String JSON_MOVIE_ID_KEY = "id";
     private static final String JSON_ORIGINAL_TITLE_KEY = "original_title";
     private static final String JSON_POSTER_PATH_KEY = "poster_path";
     private static final String JSON_OVERVIEW_KEY = "overview";
@@ -26,7 +27,7 @@ public class JsonUtils {
     /**
      * Parse the movie list Json of Tmdb endpoint
      *
-     * @param json The Tmdb json data that will be parsed.
+     * @param json The TMDb json data that will be parsed.
      * @return The parsed movie list.
      */
 
@@ -44,6 +45,9 @@ public class JsonUtils {
 
                     JSONObject movieObject = movieListAsArray.optJSONObject(i);
 
+                    if(movieObject.has(JSON_MOVIE_ID_KEY)) {
+                        movie.setmMovieId(movieObject.optInt(JSON_MOVIE_ID_KEY));
+                    }
                     if(movieObject.has(JSON_ORIGINAL_TITLE_KEY)) {
                         movie.setmOriginalTitle(movieObject.optString(JSON_ORIGINAL_TITLE_KEY));
                     }

@@ -19,6 +19,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.debdroid.popularmovies.loaders.TmdbMovieDetailLoader;
 import com.debdroid.popularmovies.model.Movie;
 import com.debdroid.popularmovies.utils.JsonUtils;
 import com.debdroid.popularmovies.utils.NetworkUtils;
@@ -34,7 +35,7 @@ public class MovieListActivity extends AppCompatActivity implements LoaderManage
     private final static String LOG_TAG = MovieListActivity.class.getSimpleName();
 
     /* A constant to save and restore the URL that is being displayed */
-    private static final String TMDB_QUERY_URL_EXTRA = "query";
+    public static final String TMDB_QUERY_URL_EXTRA = "query";
 
     /* Unique identifier for Loader */
     private static final int TMDB_MOVIES_LOADER = 84;
@@ -44,6 +45,9 @@ public class MovieListActivity extends AppCompatActivity implements LoaderManage
 
     /* TMDb category for popular movie */
     private static final String TMDB_TOP_RATED_MOVIE_CATEGORY = "top_rated";
+
+    /* TMDb category for user favourite movie */
+    public static final String TMDB_USER_FAVOURITE_CATEGORY = "user_favourite";
 
     private List<Movie> mMovieList = new ArrayList<>();
 
@@ -182,7 +186,8 @@ public class MovieListActivity extends AppCompatActivity implements LoaderManage
             mProgressBar.setVisibility(View.VISIBLE);
         }
 
-        return new LoadDataInBackground(this, args);
+        return new TmdbMovieDetailLoader(this, args);
+//        return new LoadDataInBackground(this, args);
     }
 
     @Override
@@ -220,6 +225,8 @@ public class MovieListActivity extends AppCompatActivity implements LoaderManage
     public void onMovieItemClick(int position) {
         Intent startMovieDetailIntent = new Intent(this, MovieDetailActivity.class);
         Bundle bundle = new Bundle();
+        bundle.putInt(MovieDetailActivity.MOVIE_ID_EXTRA_KEY, mMovieList.get(position)
+                .getmMovieId());
         bundle.putString(MovieDetailActivity.MOVIE_TITLE_EXTRA_KEY, mMovieList.get(position)
                 .getmOriginalTitle());
         bundle.putString(MovieDetailActivity.MOVIE_RELEASE_DATE_EXTRA_KEY, mMovieList.get(position)
@@ -236,58 +243,58 @@ public class MovieListActivity extends AppCompatActivity implements LoaderManage
         startActivity(startMovieDetailIntent);
     }
 
-    /**
-     * This static inner class loads the data from Tmdb endpoint over internet in background thread
-     * using AsyncTaskLoader.
-     * Android Studio complained when used as anonymous class, so an inner static class is created.
-     */
-    static class LoadDataInBackground extends AsyncTaskLoader<String> {
-
-        private final Bundle mBundle;
-
-        public LoadDataInBackground(Context context, Bundle bundle) {
-            super(context);
-            this.mBundle = bundle;
-        }
-
-        // Create a String member variable to store the raw JSON from TMDb endpoint
-        private String mTmdbJson;
-
-        @Override
-        protected void onStartLoading() {
-
-            // If no arguments were passed, nothing to do
-            if (mBundle == null) {
-                return;
-            }
-
-            // If mTmdbJson is not null, deliver that result. Otherwise, force a load
-            if(mTmdbJson != null) {
-                deliverResult(mTmdbJson);
-            } else {
-                forceLoad();
-            }
-        }
-
-        @Override
-        public String loadInBackground() {
-            // Extract the url from the args using the key
-            String tmdbQueryUrlString = mBundle.getString(TMDB_QUERY_URL_EXTRA);
-
-            // Parse the URL from the passed in String and perform the GET request
-            try {
-                URL tmdbUrl = new URL(tmdbQueryUrlString);
-                return NetworkUtils.getResponseFromTmdbHttpUrl(tmdbUrl);
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-
-        @Override
-        public void deliverResult(String data) {
-            mTmdbJson = data;
-            super.deliverResult(data);
-        }
-    }
+//    /**
+//     * This static inner class loads the data from Tmdb endpoint over internet in background thread
+//     * using AsyncTaskLoader.
+//     * Android Studio complained when used as anonymous class, so an inner static class is created.
+//     */
+//    private static class LoadDataInBackground extends AsyncTaskLoader<String> {
+//
+//        private final Bundle mBundle;
+//
+//        private LoadDataInBackground(Context context, Bundle bundle) {
+//            super(context);
+//            this.mBundle = bundle;
+//        }
+//
+//        // Create a String member variable to store the raw JSON from TMDb endpoint
+//        private String mTmdbJson;
+//
+//        @Override
+//        protected void onStartLoading() {
+//
+//            // If no arguments were passed, nothing to do
+//            if (mBundle == null) {
+//                return;
+//            }
+//
+//            // If mTmdbJson is not null, deliver that result. Otherwise, force a load
+//            if(mTmdbJson != null) {
+//                deliverResult(mTmdbJson);
+//            } else {
+//                forceLoad();
+//            }
+//        }
+//
+//        @Override
+//        public String loadInBackground() {
+//            // Extract the url from the args using the key
+//            String tmdbQueryUrlString = mBundle.getString(TMDB_QUERY_URL_EXTRA);
+//
+//            // Parse the URL from the passed in String and perform the GET request
+//            try {
+//                URL tmdbUrl = new URL(tmdbQueryUrlString);
+//                return NetworkUtils.getResponseFromTmdbHttpUrl(tmdbUrl);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//                return null;
+//            }
+//        }
+//
+//        @Override
+//        public void deliverResult(String data) {
+//            mTmdbJson = data;
+//            super.deliverResult(data);
+//        }
+//    }
 }
