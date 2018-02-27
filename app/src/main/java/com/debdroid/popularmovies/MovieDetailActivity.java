@@ -78,11 +78,17 @@ public class MovieDetailActivity extends AppCompatActivity
             String posterImagePath = TMDB_POSTER_IMAGE_BASE_PATH
                     + mBundle.getString(MOVIE_POSTER_PATH_EXTRA_KEY);
             Picasso.with(this).load(posterImagePath).into(mMoviePoster);
-            String friendlyDAte = DateUtils.formatFriendlyDate
+            String friendlyDate = DateUtils.formatFriendlyDate
                     (mBundle.getString(MOVIE_RELEASE_DATE_EXTRA_KEY));
-            mReleaseDate.setText(friendlyDAte);
+            mReleaseDate.setText(friendlyDate);
             mVoteAverage.setText(Double.toString(mBundle.getDouble(MOVIE_VOTE_AVERAGE_EXTRA_KEY)));
             mPlotSynopsis.setText(mBundle.getString(MOVIE_PLOT_SYNOPSIS_EXTRA_KEY));
+
+
+
+            // Set title
+            setTitle(mBundle.getString(MOVIE_TITLE_EXTRA_KEY));
+
 
             // Kick-off a loader to query the database to check if the movie is a user favourite
             // movie, if yes then the favourite image button needs to be in accent color

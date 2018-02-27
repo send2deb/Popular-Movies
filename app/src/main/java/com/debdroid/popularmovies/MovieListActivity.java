@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -21,21 +20,19 @@ import android.widget.Toast;
 
 import com.debdroid.popularmovies.loaders.TmdbMovieDetailLoader;
 import com.debdroid.popularmovies.model.Movie;
-import com.debdroid.popularmovies.utils.JsonUtils;
 import com.debdroid.popularmovies.utils.NetworkUtils;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MovieListActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<String>,
+public class MovieListActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Movie>>,
         MovieAdapter.MovieGAdapterOnClickHandler {
 
     private final static String LOG_TAG = MovieListActivity.class.getSimpleName();
 
     /* A constant to save and restore the URL that is being displayed */
-    public static final String TMDB_QUERY_URL_EXTRA = "query";
+    public static final String MOVIE_QUERY_BUNDLE_EXTRA = "query";
 
     /* Unique identifier for Loader */
     private static final int TMDB_MOVIES_LOADER = 84;
@@ -91,7 +88,10 @@ public class MovieListActivity extends AppCompatActivity implements LoaderManage
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
         mSortCategory = sharedPref.getString(getString(R.string.pref_user_sort_type_key),
                 TMDB_POPULAR_MOVIE_CATEGORY);
-        makeTmdbMovieQuery();
+
+        populateActionBarTitle(mSortCategory);
+
+        makeMovieQuery();
     }
 
     @Override
@@ -111,12 +111,20 @@ public class MovieListActivity extends AppCompatActivity implements LoaderManage
             case R.id.menu_action_sort_most_popular:
                 mSortCategory = TMDB_POPULAR_MOVIE_CATEGORY;
                 storeUserSortPreference(TMDB_POPULAR_MOVIE_CATEGORY);
-                makeTmdbMovieQuery();
+                populateActionBarTitle(TMDB_POPULAR_MOVIE_CATEGORY);
+                makeMovieQuery();
                 return true;
             case R.id.menu_action_sort_highest_rated:
                 mSortCategory = TMDB_TOP_RATED_MOVIE_CATEGORY;
                 storeUserSortPreference(TMDB_TOP_RATED_MOVIE_CATEGORY);
-                makeTmdbMovieQuery();
+                populateActionBarTitle(TMDB_TOP_RATED_MOVIE_CATEGORY);
+                makeMovieQuery();
+                return true;
+            case R.id.menu_action_sort_user_favourite:
+                mSortCategory = TMDB_USER_FAVOURITE_CATEGORY;
+                storeUserSortPreference(TMDB_USER_FAVOURITE_CATEGORY);
+                populateActionBarTitle(TMDB_USER_FAVOURITE_CATEGORY);
+                makeMovieQuery();
                 return true;
             default:
                 Log.e(LOG_TAG, "Menu selection error");
@@ -124,23 +132,50 @@ public class MovieListActivity extends AppCompatActivity implements LoaderManage
         return super.onOptionsItemSelected(item);
     }
 
+    public void populateActionBarTitle(String type) {
+        String title;
+        switch (type) {
+            case TMDB_POPULAR_MOVIE_CATEGORY:
+                title = getResources().getString(R.string.menu_action_sort_most_popular);
+                break;
+            case TMDB_TOP_RATED_MOVIE_CATEGORY:
+                title = getResources().getString(R.string.menu_action_sort_highest_rated);
+                break;
+            case TMDB_USER_FAVOURITE_CATEGORY:
+                title = getResources().getString(R.string.menu_action_sort_user_favourite);
+                break;
+            default:
+                title = getResources().getString(R.string.app_name);
+        }
+        setTitle(title);
+    }
+
     /**
      * This method constructs the URL (using {@link NetworkUtils}) for the TMDb endpoint and
      * starts the AsyncTaskLoader to perform the GET request.
      */
-    private void makeTmdbMovieQuery() {
-        // Check if network connectivity is available, otherwise return with a Toast message
-        if(!NetworkUtils.isOnline(this)) {
+    private void makeMovieQuery() {
+        // If it's a request for TMDb endpoint and the network connectivity is not available then
+        // return with a Toast message
+        if(!NetworkUtils.isOnline(this) && !mSortCategory.equals(TMDB_USER_FAVOURITE_CATEGORY)) {
             Toast.makeText(this, "No internet connection.",Toast.LENGTH_LONG).show();
+            // Reset adapter. This is ensure no data is shown if user comes from favourite list to
+            // other sort category
+            mMovieAdapter.swapData(new ArrayList<Movie>());
             return;
         }
 
-        // Get the URL for TMDb endpoint from NetworkUtils
-        URL tmdbMovieUrl = NetworkUtils.buildTmdbMovieListUrl(mSortCategory);
-
-        // Create a bundle with the URL to pass to Loader
+        // Create a bundle with the sort category to pass to Loader
         Bundle queryBundle = new Bundle();
-        queryBundle.putString(TMDB_QUERY_URL_EXTRA, tmdbMovieUrl.toString());
+        queryBundle.putString(MOVIE_QUERY_BUNDLE_EXTRA, mSortCategory);
+//
+//        if(mSortCategory == TMDB_USER_FAVOURITE_CATEGORY) {
+//
+//        }
+//
+//        // Get the URL for TMDb endpoint from NetworkUtils
+//        URL tmdbMovieUrl = NetworkUtils.buildTmdbMovieListUrl(mSortCategory);
+
 
         // Check if the Loader already exists using the id, if exists then restarts otherwise
         // create one
@@ -152,6 +187,7 @@ public class MovieListActivity extends AppCompatActivity implements LoaderManage
             loaderManager.restartLoader(TMDB_MOVIES_LOADER, queryBundle, this);
         }
     }
+
 
     /**
      * This method writes the user sort preference to SharedPreference file
@@ -179,7 +215,7 @@ public class MovieListActivity extends AppCompatActivity implements LoaderManage
     }
 
     @Override
-    public Loader<String> onCreateLoader(int id, Bundle args) {
+    public Loader<List<Movie>> onCreateLoader(int id, Bundle args) {
 
         // Show the loading indicator only when it's online and trying to load the data
         if(NetworkUtils.isOnline(this)) {
@@ -191,7 +227,7 @@ public class MovieListActivity extends AppCompatActivity implements LoaderManage
     }
 
     @Override
-    public void onLoadFinished(Loader<String> loader, String data) {
+    public void onLoadFinished(Loader<List<Movie>> loader, List<Movie> data) {
 
         /* When we finish loading, hide the loading indicator from the user. */
         mProgressBar.setVisibility(View.INVISIBLE);
@@ -202,19 +238,26 @@ public class MovieListActivity extends AppCompatActivity implements LoaderManage
         if (data == null) {
             showErrorMessage();
         } else {
-            mMovieList = JsonUtils.parseTmdbMovieJson(data);
-            mMovieAdapter.swapData(mMovieList);
+//            mMovieList = JsonUtils.parseTmdbMovieJson(data);
+//            mMovieAdapter.swapData(mMovieList);
+            resetErrorMEssage();
+            mMovieList = data;
+            mMovieAdapter.swapData(data);
         }
 
     }
 
     @Override
-    public void onLoaderReset(Loader<String> loader) {
+    public void onLoaderReset(Loader<List<Movie>> loader) {
         /* Do nothing */
     }
 
     private void showErrorMessage() {
         mErrorMessage.setVisibility(View.VISIBLE);
+    }
+
+    private void resetErrorMEssage() {
+        mErrorMessage.setVisibility(View.INVISIBLE);
     }
 
     /**
@@ -279,7 +322,7 @@ public class MovieListActivity extends AppCompatActivity implements LoaderManage
 //        @Override
 //        public String loadInBackground() {
 //            // Extract the url from the args using the key
-//            String tmdbQueryUrlString = mBundle.getString(TMDB_QUERY_URL_EXTRA);
+//            String tmdbQueryUrlString = mBundle.getString(MOVIE_QUERY_BUNDLE_EXTRA);
 //
 //            // Parse the URL from the passed in String and perform the GET request
 //            try {

@@ -5,6 +5,7 @@
     <string name="menu_action_sort">Sort</string>
     <string name="menu_action_sort_most_popular">Most Popular</string>
     <string name="menu_action_sort_highest_rated">Highest Rated</string>
+    <string name="menu_action_sort_user_favourite">User Favourite</string>
     <string name="detail_movie_release_date_label">Release Date:</string>
     <string name="detail_movie_vote_average_label">Vote Average:</string>
     <string name="detail_movie_plot_synopsis_label">Synopsis:</string>
