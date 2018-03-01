@@ -3,6 +3,8 @@ package com.debdroid.popularmovies.utils;
 import android.util.Log;
 
 import com.debdroid.popularmovies.model.Movie;
+import com.debdroid.popularmovies.model.Review;
+import com.debdroid.popularmovies.model.Video;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -23,6 +25,10 @@ public class JsonUtils {
     private static final String JSON_VOTE_AVERAGE_KEY = "vote_average";
     private static final String JSON_RELEASE_DATE_KEY = "release_date";
     private static final String JSON_BACKDROP_PATH_KEY = "backdrop_path";
+    private static final String JSON_VIDEOS_NAME_KEY = "name";
+    private static final String JSON_VIDEOS_KEY_KEY = "key";
+    private static final String JSON_REVIEWS_AUTHOR_KEY = "author";
+    private static final String JSON_REVIEWS_CONTENT_KEY = "CONTENT";
 
     /**
      * Parse the movie list Json of Tmdb endpoint
@@ -70,14 +76,96 @@ public class JsonUtils {
                     movieList.add(movie);
                 }
             } else {
-                Log.e(LOG_TAG,"Invalid Json data");
+                Log.e(LOG_TAG,"Invalid Json movie data");
             }
 
         } catch (JSONException e) {
-            Log.e(LOG_TAG, "Json parsing error");
+            Log.e(LOG_TAG, "Json movie data parsing error");
             e.printStackTrace();
         }
 
         return movieList;
+    }
+
+    /**
+     * Parse the videos (i.e. Trailer) of a movie Json of Tmdb endpoint
+     *
+     * @param json The TMDb movie video json data that will be parsed.
+     * @return The parsed trailer list.
+     */
+
+    public static List<Video> parseTmdbMovieVideoJson(String json) {
+
+        List<Video> videoList = new ArrayList<>();
+
+        try {
+            JSONObject videoListObject = new JSONObject(json);
+
+            if(videoListObject.has(JSON_RESULTS_KEY)) {
+                JSONArray videoListAsArray = videoListObject.optJSONArray(JSON_RESULTS_KEY);
+                for (int i = 0; i < videoListAsArray.length(); i++) {
+                    Video video = new Video();
+
+                    JSONObject videoObject = videoListAsArray.optJSONObject(i);
+
+                    if(videoObject.has(JSON_VIDEOS_NAME_KEY)) {
+                        video.setmName(videoObject.optString(JSON_VIDEOS_NAME_KEY));
+                    }
+                    if(videoObject.has(JSON_VIDEOS_KEY_KEY)) {
+                        video.setmKey(videoObject.optString(JSON_VIDEOS_KEY_KEY));
+                    }
+                    videoList.add(video);
+                }
+            } else {
+                Log.e(LOG_TAG,"Invalid Json video data");
+            }
+
+        } catch (JSONException e) {
+            Log.e(LOG_TAG, "Json video data parsing error");
+            e.printStackTrace();
+        }
+
+        return videoList;
+    }
+
+    /**
+     * Parse the reviews of a movie Json of Tmdb endpoint
+     *
+     * @param json The TMDb movie review json data that will be parsed.
+     * @return The parsed review list.
+     */
+
+    public static List<Review> parseTmdbMovieReviewJson(String json) {
+
+        List<Review> reviewList = new ArrayList<>();
+
+        try {
+            JSONObject reviewListObject = new JSONObject(json);
+
+            if(reviewListObject.has(JSON_RESULTS_KEY)) {
+                JSONArray reviewListAsArray = reviewListObject.optJSONArray(JSON_RESULTS_KEY);
+                for (int i = 0; i < reviewListAsArray.length(); i++) {
+                    Review review = new Review();
+
+                    JSONObject reviewObject = reviewListAsArray.optJSONObject(i);
+
+                    if(reviewObject.has(JSON_VIDEOS_NAME_KEY)) {
+                        review.setmAuthor(reviewObject.optString(JSON_REVIEWS_AUTHOR_KEY));
+                    }
+                    if(reviewObject.has(JSON_VIDEOS_KEY_KEY)) {
+                        review.setmContent(reviewObject.optString(JSON_REVIEWS_CONTENT_KEY));
+                    }
+                    reviewList.add(review);
+                }
+            } else {
+                Log.e(LOG_TAG,"Invalid Json review data");
+            }
+
+        } catch (JSONException e) {
+            Log.e(LOG_TAG, "Json review data parsing error");
+            e.printStackTrace();
+        }
+
+        return reviewList;
     }
 }

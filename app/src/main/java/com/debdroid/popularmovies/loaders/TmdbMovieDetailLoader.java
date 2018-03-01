@@ -25,31 +25,22 @@ public class TmdbMovieDetailLoader extends AsyncTaskLoader<List<Movie>> {
     private static final String TAG = "TmdbMovieDetailLoader";
 
     private final Bundle mBundle;
-//    private final Context myContext;
+    private List<Movie> mMovieList = new ArrayList<>();
 
     public TmdbMovieDetailLoader(Context context, Bundle bundle) {
         super(context);
         this.mBundle = bundle;
-//        myContext = context;
     }
-
-    // Create a String member variable to store the raw JSON from TMDb endpoint
-//    private String mTmdbJson;
-    private List<Movie> mMovieList = new ArrayList<>();
 
     @Override
     protected void onStartLoading() {
-        Log.d(TAG, "onStartLoading: ");
-
         // If no arguments were passed, nothing to do
         if (mBundle == null) {
             return;
         }
 
         // If mMovieList is not empty, deliver that result. Otherwise, force a load
-//        if(mTmdbJson != null) {
         if(!mMovieList.isEmpty()) {
-//        if(mMovieList != null) {
             deliverResult(mMovieList);
         } else {
             forceLoad();
@@ -58,9 +49,9 @@ public class TmdbMovieDetailLoader extends AsyncTaskLoader<List<Movie>> {
 
     @Override
     public List<Movie> loadInBackground() {
-        Log.d(TAG, "loadInBackground: ");
-        // Extract the url from the args using the key
+        // Extract the sort category from the args using the key
         String sortCategory = mBundle.getString(MovieListActivity.MOVIE_QUERY_BUNDLE_EXTRA);
+        // Build the url using the sort category
         URL tmdbMovieUrl = NetworkUtils.buildTmdbMovieListUrl(sortCategory);
 
         // If it's user favourite category then get the data from database
@@ -68,7 +59,6 @@ public class TmdbMovieDetailLoader extends AsyncTaskLoader<List<Movie>> {
             // The getContext() method returns the Application context, so leak safe!
             return DatabaseUtils.getUserFavouriteMovie(getContext());
         } else { // If other category then get the data from TMDb endpoint
-            // Parse the URL from the passed in String and perform the GET request
             try {
                 URL tmdbUrl = new URL(tmdbMovieUrl.toString());
                 String response = NetworkUtils.getResponseFromTmdbHttpUrl(tmdbUrl);
@@ -82,8 +72,6 @@ public class TmdbMovieDetailLoader extends AsyncTaskLoader<List<Movie>> {
 
     @Override
     public void deliverResult(List<Movie> data) {
-        Log.d(TAG, "deliverResult() called with: data = [" + data + "]");
-//        mTmdbJson = data;
         mMovieList = data;
         super.deliverResult(data);
     }

@@ -21,6 +21,8 @@ import java.util.Scanner;
 public class NetworkUtils {
 
     private static final String TMDB_MOVIE_BASE_URL = "https://api.themoviedb.org/3/movie";
+    private static final String TMDB_MOVIE_VIDEO_PATH = "videos";
+    private static final String TMDB_MOVIE_REVIEW_PATH = "reviews";
     private static final String PRAM_QUERY_API_KEY = "api_key";
 
 
@@ -28,11 +30,57 @@ public class NetworkUtils {
      * Builds the URL used to query TMDb endpoint for movie list.
      *
      * @param movieSortCategory The movie category that will be queried for.
-     * @return The URL to use to query the TMDb.
+     * @return The URL to use to query the TMDb movie list.
      */
     public static URL buildTmdbMovieListUrl(String movieSortCategory) {
         Uri builtUri = Uri.parse(TMDB_MOVIE_BASE_URL).buildUpon()
                 .appendPath(movieSortCategory)
+                .appendQueryParameter(PRAM_QUERY_API_KEY, BuildConfig.TMDB_API_KEY)
+                .build();
+
+        URL url = null;
+        try {
+            url = new URL(builtUri.toString());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        return url;
+    }
+
+    /**
+     * Builds the URL used to query TMDb endpoint for movie video (Trailer) list.
+     *
+     * @param movieId The movie id for which video list will be queried for.
+     * @return The URL to use to query the TMDb movie video (i.e. Trailer).
+     */
+    public static URL buildTmdbMovieVideoUrl(int movieId) {
+        Uri builtUri = Uri.parse(TMDB_MOVIE_BASE_URL).buildUpon()
+                .appendPath(Integer.toString(movieId))
+                .appendPath(TMDB_MOVIE_VIDEO_PATH)
+                .appendQueryParameter(PRAM_QUERY_API_KEY, BuildConfig.TMDB_API_KEY)
+                .build();
+
+        URL url = null;
+        try {
+            url = new URL(builtUri.toString());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        return url;
+    }
+
+    /**
+     * Builds the URL used to query TMDb endpoint for movie review list.
+     *
+     * @param movieId The movie id for which review list will be queried for.
+     * @return The URL to use to query the TMDb movie review.
+     */
+    public static URL buildTmdbMovieReviewUrl(int movieId) {
+        Uri builtUri = Uri.parse(TMDB_MOVIE_BASE_URL).buildUpon()
+                .appendPath(Integer.toString(movieId))
+                .appendPath(TMDB_MOVIE_REVIEW_PATH)
                 .appendQueryParameter(PRAM_QUERY_API_KEY, BuildConfig.TMDB_API_KEY)
                 .build();
 

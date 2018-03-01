@@ -10,10 +10,15 @@
     <string name="detail_movie_vote_average_label">Vote Average:</string>
     <string name="detail_movie_plot_synopsis_label">Synopsis:</string>
     <string name="detail_movie_user_favourite_label">User Favourite:</string>
+    <string name="detail_movie_trailer_label">Trailers:</string>
+    <string name="detail_movie_review_label">Reviews:</string>
+    <string name="video_trailer_play_label">Trailer</string>
+    <string name="review_author_label">Author: </string>
     <string name="error_msg">Something went wrong, so couldn\'t retrieve any data</string>
     <string name="detail_backdrop_content_description">Movie Backdrop Image</string>
     <string name="detail_poster_content_description">Movie Poster Image</string>
     <string name="favourite_image_button_content_description">User Favourite Button</string>
+    <string name="video_play_image_button_content_description">Trailer Play Button</string>
 
     <!-- SharedPreference key to store the sort type -->
     <string name="pref_user_sort_type_key">sort_type</string>
