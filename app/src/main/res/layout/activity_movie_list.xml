@@ -24,7 +24,7 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Headline"
             android:padding="@dimen/error_msg_text_Padding"
             android:textColor="@color/primary_text"
-            android:text="@string/error_msg"
+            android:text="@string/error_msg_tmdb"
             android:visibility="invisible"/>
 
         <ProgressBar

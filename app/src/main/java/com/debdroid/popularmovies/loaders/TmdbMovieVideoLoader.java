@@ -14,7 +14,6 @@ import java.net.URL;
  * Created by debashispaul on 28/02/2018.
  */
 
-
 public class TmdbMovieVideoLoader extends AsyncTaskLoader<String> {
     private static final String TAG = "TmdbMovieVideo";
 

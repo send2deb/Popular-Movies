@@ -27,6 +27,7 @@ public class PopularMovieProvider extends ContentProvider {
 
     /**
      * Create a UriMatcher will all different types of Uris for popular_movies table
+     *
      * @return The UriMatcher
      */
     static UriMatcher buildUriMatcher() {
@@ -35,11 +36,11 @@ public class PopularMovieProvider extends ContentProvider {
         final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
         uriMatcher.addURI(PopularMovieContract.CONTENT_AUTHORITY,
-                PopularMovieContract.PATH_POPULAR_MOVIE,POPULAR_MOVIE);
+                PopularMovieContract.PATH_POPULAR_MOVIE, POPULAR_MOVIE);
         uriMatcher.addURI(PopularMovieContract.CONTENT_AUTHORITY,
-                PopularMovieContract.PATH_POPULAR_MOVIE + "/#",POPULAR_MOVIE_WITH_MOVIE_ID);
+                PopularMovieContract.PATH_POPULAR_MOVIE + "/#", POPULAR_MOVIE_WITH_MOVIE_ID);
         uriMatcher.addURI(PopularMovieContract.CONTENT_AUTHORITY,
-                PopularMovieContract.PATH_POPULAR_MOVIE + "/*",POPULAR_MOVIE_WITH_CATEGORY);
+                PopularMovieContract.PATH_POPULAR_MOVIE + "/*", POPULAR_MOVIE_WITH_CATEGORY);
         return uriMatcher;
     }
 
@@ -61,12 +62,12 @@ public class PopularMovieProvider extends ContentProvider {
             case POPULAR_MOVIE:
                 retCursor = mOpenHelper.getReadableDatabase().query
                         (PopularMovieContract.PopularMovies.TABLE_NAME,
-                        projection,
-                        selection,
-                        selectionArgs,
-                        null,
-                        null,
-                        sortOrder);
+                                projection,
+                                selection,
+                                selectionArgs,
+                                null,
+                                null,
+                                sortOrder);
                 break;
             case POPULAR_MOVIE_WITH_MOVIE_ID:
                 final String movieIdSelection = PopularMovieContract.PopularMovies.TABLE_NAME +
@@ -83,22 +84,22 @@ public class PopularMovieProvider extends ContentProvider {
                                 null,
                                 sortOrder);
                 break;
-                case POPULAR_MOVIE_WITH_CATEGORY:
-                    final String movieCategorySelection =
-                            PopularMovieContract.PopularMovies.TABLE_NAME +
-                            "." + PopularMovieContract.PopularMovies.COLUMN_MOVIE_CATEGORY + " = ?";
-                    final String movieCategory = PopularMovieContract.PopularMovies
-                            .getMovieCategoryFromMovieUri(uri);
-                    final String[] movieCategorySelectionArg = new String[]{movieCategory};
-                    retCursor = mOpenHelper.getReadableDatabase().query
-                            (PopularMovieContract.PopularMovies.TABLE_NAME,
-                                    projection,
-                                    movieCategorySelection,
-                                    movieCategorySelectionArg,
-                                    null,
-                                    null,
-                                    sortOrder);
-                    break;
+            case POPULAR_MOVIE_WITH_CATEGORY:
+                final String movieCategorySelection =
+                        PopularMovieContract.PopularMovies.TABLE_NAME +
+                                "." + PopularMovieContract.PopularMovies.COLUMN_MOVIE_CATEGORY + " = ?";
+                final String movieCategory = PopularMovieContract.PopularMovies
+                        .getMovieCategoryFromMovieUri(uri);
+                final String[] movieCategorySelectionArg = new String[]{movieCategory};
+                retCursor = mOpenHelper.getReadableDatabase().query
+                        (PopularMovieContract.PopularMovies.TABLE_NAME,
+                                projection,
+                                movieCategorySelection,
+                                movieCategorySelectionArg,
+                                null,
+                                null,
+                                sortOrder);
+                break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -136,7 +137,7 @@ public class PopularMovieProvider extends ContentProvider {
             case POPULAR_MOVIE:
                 final long _id = db.insert(PopularMovieContract.PopularMovies.TABLE_NAME,
                         null, values);
-                if ( _id > 0 ) {
+                if (_id > 0) {
                     returnUri = PopularMovieContract.PopularMovies.buildMovieUri(_id);
                 } else {
                     throw new android.database.SQLException("Failed to insert row into " + uri);
@@ -156,8 +157,8 @@ public class PopularMovieProvider extends ContentProvider {
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         final int match = sUriMatcher.match(uri);
         final int deleteCount;
-        //This makes delete all rows and returns the number of rows deleted
-        if(selection == null) {
+        // This makes delete all rows and returns the number of rows deleted
+        if (selection == null) {
             selection = "1";
         }
 
@@ -171,7 +172,7 @@ public class PopularMovieProvider extends ContentProvider {
         }
 
         // Notify the change if the delete count is greater than zero
-        if (deleteCount !=0 ) {
+        if (deleteCount != 0) {
             getContext().getContentResolver().notifyChange(uri, null);
         }
         //Return the actual # of rows deleted
@@ -181,7 +182,7 @@ public class PopularMovieProvider extends ContentProvider {
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection,
                       @Nullable String[] selectionArgs) {
-        /** Not required for this project **/
+        /* Not required for this project */
         return 0;
     }
 }

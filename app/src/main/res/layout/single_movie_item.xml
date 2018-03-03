@@ -12,7 +12,7 @@
     android:background="@drawable/item_touch_selector"
     android:foreground="?android:attr/selectableItemBackground">
 
-    <RelativeLayout
+<RelativeLayout
         android:layout_width="@dimen/single_movie_image_width"
         android:layout_height="wrap_content">
 
@@ -22,6 +22,7 @@
             android:layout_height="@dimen/single_movie_image_height"
             android:contentDescription="@string/grid_image_view_content_description"
             android:gravity="center"
+            android:transitionName="@string/poster_image_transition"
             android:scaleType="centerCrop"
             android:src="@mipmap/ic_launcher" />
 

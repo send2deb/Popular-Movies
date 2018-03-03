@@ -11,4 +11,5 @@
     <color name="disable_hint_text">#80FFFFFF</color>
     <color name="divider_color">#33FFFFFF</color>
     <color name="color_white">#FFFFFF</color>
+    <color name="color_black">#000000</color>
 </resources>

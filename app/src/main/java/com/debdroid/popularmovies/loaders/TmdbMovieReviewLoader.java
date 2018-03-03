@@ -5,24 +5,20 @@ import android.os.Bundle;
 import android.support.v4.content.AsyncTaskLoader;
 
 import com.debdroid.popularmovies.MovieDetailActivity;
-import com.debdroid.popularmovies.model.Review;
-import com.debdroid.popularmovies.utils.JsonUtils;
 import com.debdroid.popularmovies.utils.NetworkUtils;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by debashispaul on 28/02/2018.
  */
 
-public class TmdbMovieReviewLoader extends AsyncTaskLoader<List<Review>> {
-    private static final String TAG = "TmdbReviewLoader";
+public class TmdbMovieReviewLoader extends AsyncTaskLoader<String> {
+    private static final String TAG = "TmdbMovieReviewLoader";
 
     private final Bundle mBundle;
-    private List<Review> mReviewList = new ArrayList<>();
+    private String mReviewJson;
 
     public TmdbMovieReviewLoader(Context context, Bundle bundle) {
         super(context);
@@ -36,25 +32,24 @@ public class TmdbMovieReviewLoader extends AsyncTaskLoader<List<Review>> {
             return;
         }
 
-        // If mReviewList is not empty, deliver that result. Otherwise, force a load
-        if(!mReviewList.isEmpty()) {
-            deliverResult(mReviewList);
+        // If mReviewJson is not empty, deliver that result. Otherwise, force a load
+        if (mReviewJson != null) {
+            deliverResult(mReviewJson);
         } else {
             forceLoad();
         }
     }
 
     @Override
-    public List<Review> loadInBackground() {
+    public String loadInBackground() {
         // Extract the movie id from the args using the key
         int movieId = mBundle.getInt(MovieDetailActivity.MOVIE_ID_EXTRA_KEY);
-        // Build the review url using the movie id
+        // Build the Review url using the movie id
         URL tmdbMovieReviewUrl = NetworkUtils.buildTmdbMovieReviewUrl(movieId);
 
         try {
             URL reviewUrl = new URL(tmdbMovieReviewUrl.toString());
-            String response = NetworkUtils.getResponseFromTmdbHttpUrl(reviewUrl);
-            return JsonUtils.parseTmdbMovieReviewJson(response);
+            return NetworkUtils.getResponseFromTmdbHttpUrl(reviewUrl);
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -62,8 +57,8 @@ public class TmdbMovieReviewLoader extends AsyncTaskLoader<List<Review>> {
     }
 
     @Override
-    public void deliverResult(List<Review> data) {
-        mReviewList = data;
+    public void deliverResult(String data) {
+        mReviewJson = data;
         super.deliverResult(data);
     }
 }

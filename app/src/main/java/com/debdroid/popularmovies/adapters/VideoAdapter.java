@@ -1,4 +1,4 @@
-package com.debdroid.popularmovies;
+package com.debdroid.popularmovies.adapters;
 
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.debdroid.popularmovies.R;
 import com.debdroid.popularmovies.model.Video;
 
 import java.util.ArrayList;
@@ -18,14 +19,14 @@ import java.util.List;
  */
 
 public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHolder> {
-    private static final String LOG_TAG = VideoAdapter.class.getSimpleName();
+    private static final String TAG = "VideoAdapter";
 
     private final VideoAdapterOnClickHandler mVideoAdapterOnClickHandler;
     private List<Video> mVideoList;
 
 
     public VideoAdapter(VideoAdapterOnClickHandler clickHandler) {
-        Log.d(LOG_TAG, "Video Adapter constructor");
+        Log.d(TAG, "Video Adapter constructor");
         mVideoAdapterOnClickHandler = clickHandler;
         mVideoList = new ArrayList<>();
     }
@@ -44,7 +45,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
         @Override
         public void onClick(View v) {
             int adapterPosition = getAdapterPosition();
-            mVideoAdapterOnClickHandler.onTrailerItemClick(adapterPosition);
+            mVideoAdapterOnClickHandler.onTrailerItemClick(mVideoList.get(adapterPosition).getmKey());
         }
     }
 
@@ -62,7 +63,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
 
     @Override
     public int getItemCount() {
-        if(mVideoList.isEmpty()) {
+        if (mVideoList.isEmpty()) {
             return 0;
         } else {
             return mVideoList.size();
@@ -78,6 +79,6 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
      * This is the interface which will be implemented by MovieDetail Activity
      */
     public interface VideoAdapterOnClickHandler {
-        void onTrailerItemClick(int position);
+        void onTrailerItemClick(String videoId);
     }
 }

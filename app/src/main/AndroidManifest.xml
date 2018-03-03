@@ -2,11 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.debdroid.popularmovies">
 
-    <!-- Permission to access Internet-->
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <!-- Permission to check Internet connectivity status-->
+    <!-- Permission to access Internet -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Permission to check Internet connectivity status -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
 
     <application
         android:name=".application.MyApplication"
@@ -16,26 +15,39 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MovieListActivity">
+        <activity android:name=".MovieListActivity"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MovieDetailActivity"
-            android:parentActivityName=".MovieListActivity">
+        <activity
+            android:name=".MovieDetailActivity"
+            android:parentActivityName=".MovieListActivity"
+            android:launchMode="singleTop">
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MovieListActivity" />
         </activity>
-    <!-- Register the Popular Movie Contnet Provider content provider -->
-    <provider
-        android:name=".contentprovider.PopularMovieProvider"
-        android:authorities="@string/content_authority"
-        android:exported="false"
-        android:syncable="true" />
+        <activity
+            android:name=".ReviewActivity"
+            android:parentActivityName=".MovieDetailActivity">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MovieDetailActivity" />
+        </activity>
+        <!-- Register the Popular Movie Contnet Provider content provider -->
+        <provider
+            android:name=".contentprovider.PopularMovieProvider"
+            android:authorities="@string/content_authority"
+            android:exported="false"
+            android:syncable="true" />
     </application>
 
 </manifest>

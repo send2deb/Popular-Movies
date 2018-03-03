@@ -3,6 +3,7 @@
     <string name="content_authority">com.debdroid.popularmovies</string>
     <string name="grid_image_view_content_description">Movie poster image</string>
     <string name="menu_action_sort">Sort</string>
+    <string name="menu_share_action_title">Share</string>
     <string name="menu_action_sort_most_popular">Most Popular</string>
     <string name="menu_action_sort_highest_rated">Highest Rated</string>
     <string name="menu_action_sort_user_favourite">User Favourite</string>
@@ -14,11 +15,13 @@
     <string name="detail_movie_review_label">Reviews:</string>
     <string name="video_trailer_play_label">Trailer</string>
     <string name="review_author_label">Author: </string>
-    <string name="error_msg">Something went wrong, so couldn\'t retrieve any data</string>
+    <string name="error_msg_tmdb">Something went wrong, so couldn\'t retrieve any data</string>
+    <string name="error_msg_user_favourite">No movie present in user favourite list</string>
     <string name="detail_backdrop_content_description">Movie Backdrop Image</string>
     <string name="detail_poster_content_description">Movie Poster Image</string>
     <string name="favourite_image_button_content_description">User Favourite Button</string>
     <string name="video_play_image_button_content_description">Trailer Play Button</string>
+    <string name="poster_image_transition">poseter_transition</string>
 
     <!-- SharedPreference key to store the sort type -->
     <string name="pref_user_sort_type_key">sort_type</string>

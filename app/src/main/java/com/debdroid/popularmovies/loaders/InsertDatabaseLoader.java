@@ -4,7 +4,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.AsyncTaskLoader;
-import android.util.Log;
 
 import com.debdroid.popularmovies.MovieDetailActivity;
 import com.debdroid.popularmovies.model.Movie;
@@ -19,8 +18,8 @@ public class InsertDatabaseLoader extends AsyncTaskLoader<String> {
 
     private final Bundle mInsertBundle;
     private String mInsertReturnStatus;
-    public static final String INSERT_INTO_FAVOURITE_MOVIE_SUCCESS = "success";
-    public static final String INSERT_INTO_FAVOURITE_MOVIE_FAILURE = "failure";
+    public static final String INSERT_INTO_FAVOURITE_MOVIE_SUCCESS = "insert_success";
+    public static final String INSERT_INTO_FAVOURITE_MOVIE_FAILURE = "insert_failure";
 
     public InsertDatabaseLoader(Context context, Bundle bundle) {
         super(context);
@@ -44,7 +43,6 @@ public class InsertDatabaseLoader extends AsyncTaskLoader<String> {
 
     @Override
     public String loadInBackground() {
-        Log.d(TAG, "InsertIntoDatabaseInBackground:loadInBackground: is called");
         Movie movie = new Movie();
         movie.setmMovieId(mInsertBundle.getInt(MovieDetailActivity.MOVIE_ID_EXTRA_KEY));
         movie.setmOriginalTitle(mInsertBundle.getString(MovieDetailActivity.MOVIE_TITLE_EXTRA_KEY));

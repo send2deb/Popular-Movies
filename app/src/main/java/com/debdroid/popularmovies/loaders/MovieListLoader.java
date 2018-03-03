@@ -3,7 +3,6 @@ package com.debdroid.popularmovies.loaders;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.content.AsyncTaskLoader;
-import android.util.Log;
 
 import com.debdroid.popularmovies.MovieListActivity;
 import com.debdroid.popularmovies.model.Movie;
@@ -20,14 +19,13 @@ import java.util.List;
  * Created by debashispaul on 26/02/2018.
  */
 
-
-public class TmdbMovieDetailLoader extends AsyncTaskLoader<List<Movie>> {
-    private static final String TAG = "TmdbMovieDetailLoader";
+public class MovieListLoader extends AsyncTaskLoader<List<Movie>> {
+    private static final String TAG = "MovieListLoader";
 
     private final Bundle mBundle;
     private List<Movie> mMovieList = new ArrayList<>();
 
-    public TmdbMovieDetailLoader(Context context, Bundle bundle) {
+    public MovieListLoader(Context context, Bundle bundle) {
         super(context);
         this.mBundle = bundle;
     }

@@ -8,15 +8,15 @@
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <ImageView
             android:id="@+id/iv_backdrop_image"
             android:layout_width="match_parent"
             android:layout_height="@dimen/backdrop_image_height"
-            android:scaleType="centerCrop"
             android:adjustViewBounds="true"
             android:contentDescription="@string/detail_backdrop_content_description"
+            android:scaleType="centerCrop"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -41,6 +41,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:contentDescription="@string/detail_poster_content_description"
+            android:transitionName="@string/poster_image_transition"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_movie_title"
             app:srcCompat="@mipmap/ic_launcher" />
@@ -144,27 +145,36 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
+            android:background="@color/color_white"
             android:contentDescription="@string/favourite_image_button_content_description"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.1"
-            android:background="@color/color_white"
             app:layout_constraintStart_toEndOf="@+id/iv_poster_image"
             app:layout_constraintTop_toBottomOf="@+id/tv_user_favourite_label"
             app:srcCompat="@drawable/ic_user_favourite" />
 
         <TextView
-        android:id="@+id/tv_trailer_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="4dp"
-        android:text="@string/detail_movie_trailer_label"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_plot_synopsis_data" />
+            android:id="@+id/tv_trailer_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/detail_movie_trailer_label"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_plot_synopsis_data" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:background="?android:attr/listDivider"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_plot_synopsis_data" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rv_movie_video"
@@ -193,7 +203,7 @@
             app:layout_constraintTop_toBottomOf="@+id/rv_movie_video" />
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/rv_review_video"
+            android:id="@+id/rv_movie_review"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"

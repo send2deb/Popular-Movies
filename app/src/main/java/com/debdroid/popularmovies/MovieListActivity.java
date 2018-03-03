@@ -3,8 +3,10 @@ package com.debdroid.popularmovies;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -14,22 +16,23 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.debdroid.popularmovies.loaders.TmdbMovieDetailLoader;
+import com.debdroid.popularmovies.adapters.MovieAdapter;
+import com.debdroid.popularmovies.loaders.MovieListLoader;
 import com.debdroid.popularmovies.model.Movie;
 import com.debdroid.popularmovies.utils.NetworkUtils;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MovieListActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Movie>>,
+public class MovieListActivity extends AppCompatActivity
+        implements LoaderManager.LoaderCallbacks<List<Movie>>,
         MovieAdapter.MovieGAdapterOnClickHandler {
-
-    private final static String LOG_TAG = MovieListActivity.class.getSimpleName();
+    private static final String TAG = "MovieListActivity";
 
     /* A constant to save and restore the URL that is being displayed */
     public static final String MOVIE_QUERY_BUNDLE_EXTRA = "query";
@@ -45,32 +48,35 @@ public class MovieListActivity extends AppCompatActivity implements LoaderManage
 
     /* TMDb category for user favourite movie */
     public static final String TMDB_USER_FAVOURITE_CATEGORY = "user_favourite";
-
-    private List<Movie> mMovieList = new ArrayList<>();
-
-    private String mSortCategory;
-
-    private TextView mErrorMessage;
+    
+    /* Define UI fields */
+    private TextView mErrorMessageTextView;
     private ProgressBar mProgressBar;
     private RecyclerView mRecyclerView;
+    
+    /* Define the adapter */
     private MovieAdapter mMovieAdapter;
-    private RecyclerView.LayoutManager mMovieGridLayoutManager;
+
+    /* All other member fields */
+    private List<Movie> mMovieList = new ArrayList<>();
+    private String mSortCategory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_list);
 
-        mErrorMessage = findViewById(R.id.tv_error_message_display);
+        mErrorMessageTextView = findViewById(R.id.tv_error_message_display);
         mProgressBar = findViewById(R.id.pb_loading_indicator);
+        
         mRecyclerView = findViewById(R.id.rv_movie_list);
         mMovieAdapter = new MovieAdapter(this, this);
         int spanCount = determineNumOfColumns();
-        mMovieGridLayoutManager = new GridLayoutManager(this, spanCount,
+        RecyclerView.LayoutManager gridLayoutManager = new GridLayoutManager(this, spanCount,
                 GridLayoutManager.VERTICAL, false);
-        mMovieGridLayoutManager.setAutoMeasureEnabled(true);
-        mRecyclerView.setLayoutManager(mMovieGridLayoutManager);
-        //Set this to false for smooth scrolling of Recyclerview
+        gridLayoutManager.setAutoMeasureEnabled(true);
+        mRecyclerView.setLayoutManager(gridLayoutManager);
+        //Set this to false for smooth scrolling of RecyclerView
         mRecyclerView.setNestedScrollingEnabled(false);
         //Set this to false so that activity starts the page from the beginning
         mRecyclerView.setFocusable(false);
@@ -91,7 +97,15 @@ public class MovieListActivity extends AppCompatActivity implements LoaderManage
 
         populateActionBarTitle(mSortCategory);
 
-        makeMovieQuery();
+        startMovieQuery();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // This is to ensure that the favourite movie list grid is refreshed whenever user removes
+        // a favourite movie from detail page and comes back to list
+        startMovieQuery();
     }
 
     @Override
@@ -104,35 +118,39 @@ public class MovieListActivity extends AppCompatActivity implements LoaderManage
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            // It's the top level menu, no action required just get the icon
+            // It's the top level menu, no action required
             case R.id.menu_action_sort:
-                // It's the top level menu, no action required just get the icon
+                // It's the top level menu, no action required
                 return true;
             case R.id.menu_action_sort_most_popular:
                 mSortCategory = TMDB_POPULAR_MOVIE_CATEGORY;
                 storeUserSortPreference(TMDB_POPULAR_MOVIE_CATEGORY);
                 populateActionBarTitle(TMDB_POPULAR_MOVIE_CATEGORY);
-                makeMovieQuery();
+                startMovieQuery();
                 return true;
             case R.id.menu_action_sort_highest_rated:
                 mSortCategory = TMDB_TOP_RATED_MOVIE_CATEGORY;
                 storeUserSortPreference(TMDB_TOP_RATED_MOVIE_CATEGORY);
                 populateActionBarTitle(TMDB_TOP_RATED_MOVIE_CATEGORY);
-                makeMovieQuery();
+                startMovieQuery();
                 return true;
             case R.id.menu_action_sort_user_favourite:
                 mSortCategory = TMDB_USER_FAVOURITE_CATEGORY;
                 storeUserSortPreference(TMDB_USER_FAVOURITE_CATEGORY);
                 populateActionBarTitle(TMDB_USER_FAVOURITE_CATEGORY);
-                makeMovieQuery();
+                startMovieQuery();
                 return true;
             default:
-                Log.e(LOG_TAG, "Menu selection error");
+                Log.e(TAG, "Menu selection error");
         }
         return super.onOptionsItemSelected(item);
     }
 
-    public void populateActionBarTitle(String type) {
+    /**
+     * This method sets the title of the activity based on the movie category
+     * @param type The movie category
+     */
+    private void populateActionBarTitle(String type) {
         String title;
         switch (type) {
             case TMDB_POPULAR_MOVIE_CATEGORY:
@@ -151,30 +169,26 @@ public class MovieListActivity extends AppCompatActivity implements LoaderManage
     }
 
     /**
-     * This method constructs the URL (using {@link NetworkUtils}) for the TMDb endpoint and
-     * starts the AsyncTaskLoader to perform the GET request.
+     * This method starts the loader to load the movie. It also checks if the network connection 
+     * is available before TMDb endpoint data loading.
      */
-    private void makeMovieQuery() {
+    private void startMovieQuery() {
         // If it's a request for TMDb endpoint and the network connectivity is not available then
         // return with a Toast message
         if(!NetworkUtils.isOnline(this) && !mSortCategory.equals(TMDB_USER_FAVOURITE_CATEGORY)) {
             Toast.makeText(this, "No internet connection.",Toast.LENGTH_LONG).show();
-            // Reset adapter. This is ensure no data is shown if user comes from favourite list to
+            // Reset adapter. This ensures no data is shown if user comes from favourite list to
             // other sort category
             mMovieAdapter.swapData(new ArrayList<Movie>());
+            showErrorMessage();
             return;
+        } else {
+            resetErrorMessage();
         }
 
         // Create a bundle with the sort category to pass to Loader
         Bundle queryBundle = new Bundle();
         queryBundle.putString(MOVIE_QUERY_BUNDLE_EXTRA, mSortCategory);
-//
-//        if(mSortCategory == TMDB_USER_FAVOURITE_CATEGORY) {
-//
-//        }
-//
-//        // Get the URL for TMDb endpoint from NetworkUtils
-//        URL tmdbMovieUrl = NetworkUtils.buildTmdbMovieListUrl(mSortCategory);
 
 
         // Check if the Loader already exists using the id, if exists then restarts otherwise
@@ -201,7 +215,7 @@ public class MovieListActivity extends AppCompatActivity implements LoaderManage
     }
 
     /**
-     * This method dynamically determines the number of column for the recycler view based on
+     * This method dynamically determines the number of column for the RecyclerView based on
      * screen width and density
      * @return number of calculated columns
      */
@@ -221,9 +235,7 @@ public class MovieListActivity extends AppCompatActivity implements LoaderManage
         if(NetworkUtils.isOnline(this)) {
             mProgressBar.setVisibility(View.VISIBLE);
         }
-
-        return new TmdbMovieDetailLoader(this, args);
-//        return new LoadDataInBackground(this, args);
+        return new MovieListLoader(this, args);
     }
 
     @Override
@@ -232,19 +244,17 @@ public class MovieListActivity extends AppCompatActivity implements LoaderManage
         /* When we finish loading, hide the loading indicator from the user. */
         mProgressBar.setVisibility(View.INVISIBLE);
         /*
-         * If the results are null, we assume an error has occurred. There are much more robust
-         * methods for checking errors, but we wanted to keep this particular example simple.
+         * If the results are null, then some error occurred
          */
         if (data == null) {
+            // Reset adapter
+            mMovieAdapter.swapData(new ArrayList<Movie>());
             showErrorMessage();
         } else {
-//            mMovieList = JsonUtils.parseTmdbMovieJson(data);
-//            mMovieAdapter.swapData(mMovieList);
-            resetErrorMEssage();
+            resetErrorMessage();
             mMovieList = data;
             mMovieAdapter.swapData(data);
         }
-
     }
 
     @Override
@@ -252,12 +262,23 @@ public class MovieListActivity extends AppCompatActivity implements LoaderManage
         /* Do nothing */
     }
 
+    /**
+     * This method displays the appropriate error message
+     */
     private void showErrorMessage() {
-        mErrorMessage.setVisibility(View.VISIBLE);
+        mErrorMessageTextView.setVisibility(View.VISIBLE);
+        if(mSortCategory.equals(TMDB_USER_FAVOURITE_CATEGORY)) {
+            mErrorMessageTextView.setText(getResources().getString(R.string.error_msg_user_favourite));
+        } else {
+            mErrorMessageTextView.setText(getResources().getString(R.string.error_msg_tmdb));
+        }
     }
 
-    private void resetErrorMEssage() {
-        mErrorMessage.setVisibility(View.INVISIBLE);
+    /**
+     * This method resets the error message
+     */
+    private void resetErrorMessage() {
+        mErrorMessageTextView.setVisibility(View.INVISIBLE);
     }
 
     /**
@@ -265,7 +286,7 @@ public class MovieListActivity extends AppCompatActivity implements LoaderManage
      * @param position Position of the movie poster clicked
      */
     @Override
-    public void onMovieItemClick(int position) {
+    public void onMovieItemClick(int position, MovieAdapter.MovieViewHolder vh) {
         Intent startMovieDetailIntent = new Intent(this, MovieDetailActivity.class);
         Bundle bundle = new Bundle();
         bundle.putInt(MovieDetailActivity.MOVIE_ID_EXTRA_KEY, mMovieList.get(position)
@@ -283,61 +304,10 @@ public class MovieListActivity extends AppCompatActivity implements LoaderManage
         bundle.putString(MovieDetailActivity.MOVIE_BACKDROP_PATH_EXTRA_KEY, mMovieList.get(position)
                 .getmBackdropImage());
         startMovieDetailIntent.putExtras(bundle);
-        startActivity(startMovieDetailIntent);
+        ImageView imageView = vh.mMoviePosterImageView;
+        ActivityOptionsCompat options = ActivityOptionsCompat
+                .makeSceneTransitionAnimation(this, imageView,
+                        ViewCompat.getTransitionName(imageView));
+        startActivity(startMovieDetailIntent, options.toBundle());
     }
-
-//    /**
-//     * This static inner class loads the data from Tmdb endpoint over internet in background thread
-//     * using AsyncTaskLoader.
-//     * Android Studio complained when used as anonymous class, so an inner static class is created.
-//     */
-//    private static class LoadDataInBackground extends AsyncTaskLoader<String> {
-//
-//        private final Bundle mBundle;
-//
-//        private LoadDataInBackground(Context context, Bundle bundle) {
-//            super(context);
-//            this.mBundle = bundle;
-//        }
-//
-//        // Create a String member variable to store the raw JSON from TMDb endpoint
-//        private String mTmdbJson;
-//
-//        @Override
-//        protected void onStartLoading() {
-//
-//            // If no arguments were passed, nothing to do
-//            if (mBundle == null) {
-//                return;
-//            }
-//
-//            // If mTmdbJson is not null, deliver that result. Otherwise, force a load
-//            if(mTmdbJson != null) {
-//                deliverResult(mTmdbJson);
-//            } else {
-//                forceLoad();
-//            }
-//        }
-//
-//        @Override
-//        public String loadInBackground() {
-//            // Extract the url from the args using the key
-//            String tmdbQueryUrlString = mBundle.getString(MOVIE_QUERY_BUNDLE_EXTRA);
-//
-//            // Parse the URL from the passed in String and perform the GET request
-//            try {
-//                URL tmdbUrl = new URL(tmdbQueryUrlString);
-//                return NetworkUtils.getResponseFromTmdbHttpUrl(tmdbUrl);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//                return null;
-//            }
-//        }
-//
-//        @Override
-//        public void deliverResult(String data) {
-//            mTmdbJson = data;
-//            super.deliverResult(data);
-//        }
-//    }
 }

@@ -3,7 +3,6 @@ package com.debdroid.popularmovies.loaders;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.content.AsyncTaskLoader;
-import android.util.Log;
 
 import com.debdroid.popularmovies.MovieDetailActivity;
 import com.debdroid.popularmovies.utils.DatabaseUtils;
@@ -17,8 +16,8 @@ public class QueryDatabaseLoader extends AsyncTaskLoader<String> {
 
     private final Bundle mQueryBundle;
     private String mQueryReturnStatus;
-    public static final String QUERY_FOR_FAVOURITE_MOVIE_SUCCESS = "success";
-    public static final String QUERY_FOR_FAVOURITE_MOVIE_FAILURE = "failure";
+    public static final String QUERY_FOR_FAVOURITE_MOVIE_SUCCESS = "query_success";
+    public static final String QUERY_FOR_FAVOURITE_MOVIE_FAILURE = "query_failure";
 
     public QueryDatabaseLoader(Context context, Bundle bundle) {
         super(context);

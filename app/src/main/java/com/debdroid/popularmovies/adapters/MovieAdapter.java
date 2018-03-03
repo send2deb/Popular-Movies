@@ -1,4 +1,4 @@
-package com.debdroid.popularmovies;
+package com.debdroid.popularmovies.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.debdroid.popularmovies.R;
 import com.debdroid.popularmovies.model.Movie;
 import com.squareup.picasso.Picasso;
 
@@ -20,7 +21,7 @@ import java.util.List;
  */
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
-    private static final String LOG_TAG = MovieAdapter.class.getSimpleName();
+    private static final String TAG = "MovieAdapter";
 
     private final MovieGAdapterOnClickHandler mMovieGAdapterOnClickHandler;
 
@@ -30,14 +31,14 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
 
     public MovieAdapter(Context context, MovieGAdapterOnClickHandler clickHandler) {
-        Log.d(LOG_TAG, "Movie Adapter constructor");
+        Log.d(TAG, "Movie Adapter constructor");
         mContext = context;
         mMovieGAdapterOnClickHandler = clickHandler;
         mMovieList = new ArrayList<>();
     }
 
-    class MovieViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private final ImageView mMoviePosterImageView;
+    public class MovieViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        public final ImageView mMoviePosterImageView;
         private final TextView mMovieOriginalTitle;
 
         private MovieViewHolder(final View view) {
@@ -50,7 +51,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         @Override
         public void onClick(View v) {
             int adapterPosition = getAdapterPosition();
-            mMovieGAdapterOnClickHandler.onMovieItemClick(adapterPosition);
+            mMovieGAdapterOnClickHandler.onMovieItemClick(adapterPosition, this);
         }
     }
 
@@ -71,7 +72,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
     @Override
     public int getItemCount() {
-        if(mMovieList.isEmpty()) {
+        if (mMovieList.isEmpty()) {
             return 0;
         } else {
             return mMovieList.size();
@@ -84,9 +85,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     }
 
     /**
-     * This is the interface which will be implemented by MovieList Activity
+     * This is the interface which will be implemented by MovieListActivity
      */
     public interface MovieGAdapterOnClickHandler {
-        void onMovieItemClick(int position);
+        void onMovieItemClick(int position, MovieAdapter.MovieViewHolder vh);
     }
 }

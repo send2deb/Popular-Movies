@@ -26,7 +26,7 @@ public final class PopularMovieContract {
     public static final String PATH_POPULAR_MOVIE = "popular_movies";
 
     /**
-     Inner class that extends BaseColumns and defines the table contents of the popular_movies table
+     * Inner class that extends BaseColumns and defines the table contents of the popular_movies table
      */
     public static final class PopularMovies implements BaseColumns {
 
@@ -62,6 +62,7 @@ public final class PopularMovieContract {
 
         /**
          * Build the popular movie item uri with the row id
+         *
          * @param id The row id
          * @return The Uri with row id appended as path
          */
@@ -71,6 +72,7 @@ public final class PopularMovieContract {
 
         /**
          * Build the uri with movie id appended as path
+         *
          * @param movieId The movie id
          * @return The full uri of the movie item
          */
@@ -80,28 +82,31 @@ public final class PopularMovieContract {
 
         /**
          * Build the uri with movie category (i.e. user favourite) appended as path
+         *
          * @param movieCategory The category (i.e. user favourite) of the movies
          * @return The full uri of the movie category
          */
-        public static Uri buildMovieUriWithMovieCategory (String movieCategory) {
+        public static Uri buildMovieUriWithMovieCategory(String movieCategory) {
             return CONTENT_URI.buildUpon().appendPath(movieCategory).build();
         }
 
         /**
          * Retrieve the movie id from the uri
+         *
          * @param uri The uri of the movie item
          * @return The movie id
          */
-        public static int getMovieIdFromUri (Uri uri) {
+        public static int getMovieIdFromUri(Uri uri) {
             return Integer.parseInt(uri.getPathSegments().get(1));
         }
 
         /**
          * Retrieve the movie category (i.e. user favourite) from the uri
+         *
          * @param uri The uri of the movie category
          * @return The movie category (i.e. user favourite )
          */
-        static String getMovieCategoryFromMovieUri (Uri uri) {
+        static String getMovieCategoryFromMovieUri(Uri uri) {
             return uri.getPathSegments().get(1);
         }
     }

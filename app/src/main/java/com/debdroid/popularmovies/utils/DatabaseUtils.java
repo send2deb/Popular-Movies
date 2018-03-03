@@ -19,7 +19,12 @@ import java.util.List;
 
 public class DatabaseUtils {
 
-
+    /**
+     * This method query the database for a movie id and returns true of it exists
+     * @param context The application context
+     * @param movieId The movie id to be queried
+     * @return True if movie exists, otherwise returns false
+     */
     public static boolean isUserFavouriteMovie(Context context, int movieId) {
         ContentResolver contentResolver = context.getContentResolver();
         Uri movieIdUri = PopularMovieContract.PopularMovies.buildMovieUriWithMovieId(movieId);
@@ -44,6 +49,12 @@ public class DatabaseUtils {
         }
     }
 
+    /**
+     * This method inserts a movied to database
+     * @param context The application context
+     * @param movie The movie to be inserted to database
+     * @return Returns the uri of the inserted movie
+     */
     public static Uri insertUserFavouriteMovie(Context context, Movie movie) {
         ContentResolver contentResolver = context.getContentResolver();
         Uri movieUri = PopularMovieContract.PopularMovies.CONTENT_URI;
@@ -68,16 +79,27 @@ public class DatabaseUtils {
         return contentResolver.insert(movieUri, contentValues);
     }
 
-    public static void deleteUserFavouriteMovie(Context context, int movieId) {
+    /**
+     * Thi method deletes the movie from database
+     * @param context The application context
+     * @param movieId the movie id to be deleted
+     * @return The delete count
+     */
+    public static int deleteUserFavouriteMovie(Context context, int movieId) {
         ContentResolver contentResolver = context.getContentResolver();
         Uri movieUri = PopularMovieContract.PopularMovies.CONTENT_URI;
 
-        String selection = PopularMovieContract.PopularMovies.COLUMN_MOVIE_ID + " ?";
+        String selection = PopularMovieContract.PopularMovies.COLUMN_MOVIE_ID + " = ?";
         String[] selectionArgs = new String[] {Integer.toString(movieId)};
 
-        contentResolver.delete(movieUri, selection, selectionArgs);
+        return contentResolver.delete(movieUri, selection, selectionArgs);
     }
 
+    /**
+     * Thi method retrieves all the user favourite movies from database, sorted by movie id
+     * @param context The application context
+     * @return The list of movies
+     */
     public static List<Movie> getUserFavouriteMovie(Context context) {
         ContentResolver contentResolver = context.getContentResolver();
         Uri movieUri = PopularMovieContract.PopularMovies.CONTENT_URI;
@@ -101,6 +123,11 @@ public class DatabaseUtils {
         }
     }
 
+    /**
+     * This method converts the movie cursor to movie list
+     * @param cursor The movie cursor
+     * @return The list of movies
+     */
     private static List<Movie> createListFromCursor(Cursor cursor) {
         List<Movie> movieList = new ArrayList<>();
         do {
