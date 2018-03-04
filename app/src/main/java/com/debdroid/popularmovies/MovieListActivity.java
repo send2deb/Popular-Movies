@@ -3,6 +3,7 @@ package com.debdroid.popularmovies;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Parcelable;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -48,7 +49,15 @@ public class MovieListActivity extends AppCompatActivity
 
     /* TMDb category for user favourite movie */
     public static final String TMDB_USER_FAVOURITE_CATEGORY = "user_favourite";
-    
+
+    /* Key to save and restore layout manager's state */
+    private static final String LAYOUT_MANGER_STATE_KEY = "layout_manager_state_key";
+    /* Define a Parcelable to store the state of GridLayoutManager */
+    private Parcelable mGridLayoutManagerState;
+
+    /* Bundle key for Movie Parcelable */
+    public static final String MOVIE_PARCELABLE_EXTRA_KEY = "movie_parcelable_extra_key";
+
     /* Define UI fields */
     private TextView mErrorMessageTextView;
     private ProgressBar mProgressBar;
@@ -63,6 +72,7 @@ public class MovieListActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate: is called");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_list);
 
@@ -146,6 +156,21 @@ public class MovieListActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        mGridLayoutManagerState = mRecyclerView.getLayoutManager().onSaveInstanceState();
+        outState.putParcelable(LAYOUT_MANGER_STATE_KEY, mGridLayoutManagerState);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if(savedInstanceState != null) {
+            mGridLayoutManagerState = savedInstanceState.getParcelable(LAYOUT_MANGER_STATE_KEY);
+        }
+    }
+
     /**
      * This method sets the title of the activity based on the movie category
      * @param type The movie category
@@ -176,7 +201,8 @@ public class MovieListActivity extends AppCompatActivity
         // If it's a request for TMDb endpoint and the network connectivity is not available then
         // return with a Toast message
         if(!NetworkUtils.isOnline(this) && !mSortCategory.equals(TMDB_USER_FAVOURITE_CATEGORY)) {
-            Toast.makeText(this, "No internet connection.",Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getResources().getString(R.string.no_internet_connection_msg),
+                    Toast.LENGTH_LONG).show();
             // Reset adapter. This ensures no data is shown if user comes from favourite list to
             // other sort category
             mMovieAdapter.swapData(new ArrayList<Movie>());
@@ -254,6 +280,14 @@ public class MovieListActivity extends AppCompatActivity
             resetErrorMessage();
             mMovieList = data;
             mMovieAdapter.swapData(data);
+            // Reposition the RecyclerView in case of orientation change
+            if(mGridLayoutManagerState != null) {
+                mRecyclerView.getLayoutManager().onRestoreInstanceState(mGridLayoutManagerState);
+                // Reset it to null to ensure RecyclerView positions zero if category changed in between
+                mGridLayoutManagerState = null;
+            } else { // Position to zero if the category changed
+                mRecyclerView.scrollToPosition(0);
+            }
         }
     }
 
@@ -288,22 +322,7 @@ public class MovieListActivity extends AppCompatActivity
     @Override
     public void onMovieItemClick(int position, MovieAdapter.MovieViewHolder vh) {
         Intent startMovieDetailIntent = new Intent(this, MovieDetailActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putInt(MovieDetailActivity.MOVIE_ID_EXTRA_KEY, mMovieList.get(position)
-                .getmMovieId());
-        bundle.putString(MovieDetailActivity.MOVIE_TITLE_EXTRA_KEY, mMovieList.get(position)
-                .getmOriginalTitle());
-        bundle.putString(MovieDetailActivity.MOVIE_RELEASE_DATE_EXTRA_KEY, mMovieList.get(position)
-                .getmReleaseDate());
-        bundle.putString(MovieDetailActivity.MOVIE_POSTER_PATH_EXTRA_KEY, mMovieList.get(position)
-                .getmPosterImage());
-        bundle.putDouble(MovieDetailActivity.MOVIE_VOTE_AVERAGE_EXTRA_KEY, mMovieList.get(position)
-                .getmUserRating());
-        bundle.putString(MovieDetailActivity.MOVIE_PLOT_SYNOPSIS_EXTRA_KEY, mMovieList.get(position)
-                .getmPlotSynopsis());
-        bundle.putString(MovieDetailActivity.MOVIE_BACKDROP_PATH_EXTRA_KEY, mMovieList.get(position)
-                .getmBackdropImage());
-        startMovieDetailIntent.putExtras(bundle);
+        startMovieDetailIntent.putExtra(MOVIE_PARCELABLE_EXTRA_KEY, mMovieList.get(position));
         ImageView imageView = vh.mMoviePosterImageView;
         ActivityOptionsCompat options = ActivityOptionsCompat
                 .makeSceneTransitionAnimation(this, imageView,

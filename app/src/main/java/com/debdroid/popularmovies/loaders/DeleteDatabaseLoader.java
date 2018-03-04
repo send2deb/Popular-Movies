@@ -3,8 +3,10 @@ package com.debdroid.popularmovies.loaders;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.content.AsyncTaskLoader;
+import android.util.Log;
 
-import com.debdroid.popularmovies.MovieDetailActivity;
+import com.debdroid.popularmovies.MovieListActivity;
+import com.debdroid.popularmovies.model.Movie;
 import com.debdroid.popularmovies.utils.DatabaseUtils;
 
 /**
@@ -41,7 +43,14 @@ public class DeleteDatabaseLoader extends AsyncTaskLoader<String> {
 
     @Override
     public String loadInBackground() {
-        int movieId = mDeleteBundle.getInt(MovieDetailActivity.MOVIE_ID_EXTRA_KEY);
+        Movie movie = mDeleteBundle.getParcelable(MovieListActivity.MOVIE_PARCELABLE_EXTRA_KEY);
+        int movieId;
+        if(movie != null) {
+            movieId = movie.getmMovieId();
+        } else {
+            Log.e(TAG, "loadInBackground: Parcelable error. Couldn't retrieve the movie Parcelable");
+            return DELETE_FROM_FAVOURITE_MOVIE_FAILURE;
+        }
 
         int retValue = DatabaseUtils.deleteUserFavouriteMovie(getContext(), movieId);
         if (retValue == 1) {

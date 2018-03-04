@@ -21,7 +21,10 @@
     <string name="detail_poster_content_description">Movie Poster Image</string>
     <string name="favourite_image_button_content_description">User Favourite Button</string>
     <string name="video_play_image_button_content_description">Trailer Play Button</string>
-    <string name="poster_image_transition">poseter_transition</string>
+    <string name="poster_image_transition">poster_transition</string>
+    <string name="no_internet_connection_msg">No internet connection.</string>
+    <string name="movie_insert_msg">Movie \"%1$s\" added to favourite list</string>
+    <string name="movie_delete_msg">Movie \"%1$s\" removed from favourite list</string>
 
     <!-- SharedPreference key to store the sort type -->
     <string name="pref_user_sort_type_key">sort_type</string>

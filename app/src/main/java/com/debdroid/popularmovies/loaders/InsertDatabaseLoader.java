@@ -5,7 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.AsyncTaskLoader;
 
-import com.debdroid.popularmovies.MovieDetailActivity;
+import com.debdroid.popularmovies.MovieListActivity;
 import com.debdroid.popularmovies.model.Movie;
 import com.debdroid.popularmovies.utils.DatabaseUtils;
 
@@ -43,19 +43,7 @@ public class InsertDatabaseLoader extends AsyncTaskLoader<String> {
 
     @Override
     public String loadInBackground() {
-        Movie movie = new Movie();
-        movie.setmMovieId(mInsertBundle.getInt(MovieDetailActivity.MOVIE_ID_EXTRA_KEY));
-        movie.setmOriginalTitle(mInsertBundle.getString(MovieDetailActivity.MOVIE_TITLE_EXTRA_KEY));
-        movie.setmPosterImage(mInsertBundle
-                .getString(MovieDetailActivity.MOVIE_POSTER_PATH_EXTRA_KEY));
-        movie.setmReleaseDate(mInsertBundle
-                .getString(MovieDetailActivity.MOVIE_RELEASE_DATE_EXTRA_KEY));
-        movie.setmUserRating(mInsertBundle
-                .getDouble(MovieDetailActivity.MOVIE_VOTE_AVERAGE_EXTRA_KEY));
-        movie.setmBackdropImage(mInsertBundle
-                .getString(MovieDetailActivity.MOVIE_BACKDROP_PATH_EXTRA_KEY));
-        movie.setmPlotSynopsis(mInsertBundle
-                .getString(MovieDetailActivity.MOVIE_PLOT_SYNOPSIS_EXTRA_KEY));
+        Movie movie = mInsertBundle.getParcelable(MovieListActivity.MOVIE_PARCELABLE_EXTRA_KEY);
 
         Uri uri = DatabaseUtils.insertUserFavouriteMovie(getContext(), movie);
         if (uri != null) {

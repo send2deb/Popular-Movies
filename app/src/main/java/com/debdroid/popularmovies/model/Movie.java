@@ -1,10 +1,13 @@
 package com.debdroid.popularmovies.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by debashispaul on 21/02/2018.
  */
 
-public class Movie {
+public class Movie implements Parcelable {
     private int mMovieId;
     private String mOriginalTitle;
     private String mPosterImage;
@@ -85,5 +88,42 @@ public class Movie {
 
     public void setmBackdropImage(String mBackdropImage) {
         this.mBackdropImage = mBackdropImage;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(mMovieId);
+        dest.writeString(mOriginalTitle);
+        dest.writeString(mPosterImage);
+        dest.writeString(mPlotSynopsis);
+        dest.writeDouble(mUserRating);
+        dest.writeString(mReleaseDate);
+        dest.writeString(mBackdropImage);
+    }
+
+    public static final Parcelable.Creator<Movie> CREATOR
+            = new Parcelable.Creator<Movie>() {
+        public Movie createFromParcel(Parcel in) {
+            return new Movie(in);
+        }
+
+        public Movie[] newArray(int size) {
+            return new Movie[size];
+        }
+    };
+
+    private Movie(Parcel in) {
+        mMovieId = in.readInt();
+        mOriginalTitle = in.readString();
+        mPosterImage = in.readString();
+        mPlotSynopsis = in.readString();
+        mUserRating = in.readDouble();
+        mReleaseDate = in.readString();
+        mBackdropImage = in.readString();
     }
 }

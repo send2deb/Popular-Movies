@@ -29,6 +29,7 @@ import com.debdroid.popularmovies.loaders.InsertDatabaseLoader;
 import com.debdroid.popularmovies.loaders.QueryDatabaseLoader;
 import com.debdroid.popularmovies.loaders.TmdbMovieReviewLoader;
 import com.debdroid.popularmovies.loaders.TmdbMovieVideoLoader;
+import com.debdroid.popularmovies.model.Movie;
 import com.debdroid.popularmovies.model.Review;
 import com.debdroid.popularmovies.model.Video;
 import com.debdroid.popularmovies.utils.DateUtils;
@@ -45,12 +46,6 @@ public class MovieDetailActivity extends AppCompatActivity
 
     /* Define the static variables used as key for bundle parameters */
     public static final String MOVIE_ID_EXTRA_KEY = "movie_id";
-    public static final String MOVIE_TITLE_EXTRA_KEY = "movie_title";
-    public static final String MOVIE_RELEASE_DATE_EXTRA_KEY = "movie_release_date";
-    public static final String MOVIE_POSTER_PATH_EXTRA_KEY = "movie_poster_path";
-    public static final String MOVIE_VOTE_AVERAGE_EXTRA_KEY = "movie_vote_average";
-    public static final String MOVIE_PLOT_SYNOPSIS_EXTRA_KEY = "movie_plot_synopsis";
-    public static final String MOVIE_BACKDROP_PATH_EXTRA_KEY = "movie_backdrop_path";
     public static final String MOVIE_REVIEW_TITLE_BUNDLE_EXTRA = "movie_review_title_key";
     public static final String MOVIE_REVIEW_AUTHOR_BUNDLE_EXTRA = "movie_review_author_key";
     public static final String MOVIE_REVIEW_CONTENT_BUNDLE_EXTRA = "movie_review_bundle_key";
@@ -85,16 +80,9 @@ public class MovieDetailActivity extends AppCompatActivity
     private VideoAdapter mVideoAdapter;
     private ReviewAdapter mReviewAdapter;
 
-    /* Other memebr variables */
-    private Bundle mBundle;
+    /* Other member variables */
     private boolean isUserFavourite = false;
-    private int mMovieId;
-    private String mMovieOriginalTitle;
-    private String mMovieReleaseDate;
-    private String mMovieBackdropImage;
-    private String mMoviePoster;
-    private String mMoviePlotSynopsis;
-    private double mMovieVoteAverage;
+    private Movie mMovie;
     private List<Review> mReviewList = new ArrayList<>();
     private ShareActionProvider mShareActionProvider;
     private String mYouTubeFirstTrailerKey;
@@ -117,22 +105,8 @@ public class MovieDetailActivity extends AppCompatActivity
         // Set the click listener to user favourite button
         mUserFavouriteImageButton.setOnClickListener(this);
 
-        // If it's first time then get the Bundle from intent otherwise from savedInstanceState
-        if (savedInstanceState == null) {
-            Log.d(TAG, "onCreate: First Time - savedInstanceState is NULL");
-            mBundle = getIntent().getExtras();
-        } else {
-            Log.d(TAG, "onCreate: Restore Case - savedInstanceState is NOT NULL");
-            mBundle = savedInstanceState;
-        }
-        if (mBundle != null) {
-            mMovieId = mBundle.getInt(MOVIE_ID_EXTRA_KEY);
-            mMovieOriginalTitle = mBundle.getString(MOVIE_TITLE_EXTRA_KEY);
-            mMovieReleaseDate = mBundle.getString(MOVIE_RELEASE_DATE_EXTRA_KEY);
-            mMovieBackdropImage = mBundle.getString(MOVIE_BACKDROP_PATH_EXTRA_KEY);
-            mMoviePoster = mBundle.getString(MOVIE_POSTER_PATH_EXTRA_KEY);
-            mMoviePlotSynopsis = mBundle.getString(MOVIE_PLOT_SYNOPSIS_EXTRA_KEY);
-            mMovieVoteAverage = mBundle.getDouble(MOVIE_VOTE_AVERAGE_EXTRA_KEY);
+        mMovie = getIntent().getExtras().getParcelable(MovieListActivity.MOVIE_PARCELABLE_EXTRA_KEY);
+        if(mMovie != null) {
 
             // Populate the UI details
             populateMovieDetail();
@@ -144,12 +118,12 @@ public class MovieDetailActivity extends AppCompatActivity
             setMovieReviewRecyclerView();
 
             // Set Activity title to Movie name
-            setTitle(mMovieOriginalTitle);
+            setTitle(mMovie.getmOriginalTitle());
 
             // Kick-off a loader to query the database to check if the movie is a user favourite
             // movie and set the flag and button color accordingly
             Bundle bundle = new Bundle();
-            bundle.putInt(MOVIE_ID_EXTRA_KEY, mMovieId);
+            bundle.putInt(MOVIE_ID_EXTRA_KEY, mMovie.getmMovieId());
             // Check if the Query Loader already exists using the id, if exists then restarts
             // otherwise create one
             LoaderManager loaderManager = getSupportLoaderManager();
@@ -179,20 +153,6 @@ public class MovieDetailActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        // Store all the data passed from MovieListActivity so that it can be retrieved in case of
-        // orientation change
-        outState.putInt(MOVIE_ID_EXTRA_KEY, mMovieId);
-        outState.putString(MOVIE_TITLE_EXTRA_KEY, mMovieOriginalTitle);
-        outState.putString(MOVIE_POSTER_PATH_EXTRA_KEY, mMoviePoster);
-        outState.putString(MOVIE_BACKDROP_PATH_EXTRA_KEY, mMovieBackdropImage);
-        outState.putString(MOVIE_RELEASE_DATE_EXTRA_KEY, mMovieReleaseDate);
-        outState.putString(MOVIE_PLOT_SYNOPSIS_EXTRA_KEY, mMoviePlotSynopsis);
-        outState.putDouble(MOVIE_VOTE_AVERAGE_EXTRA_KEY, mMovieVoteAverage);
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu
         getMenuInflater().inflate(R.menu.movie_detail_activity_menu, menu);
@@ -215,15 +175,15 @@ public class MovieDetailActivity extends AppCompatActivity
      */
     private void populateMovieDetail() {
         // Populate the UI fields
-        String backdropImagePath = TMDB_BACKDROP_IMAGE_BASE_PATH + mMovieBackdropImage;
+        String backdropImagePath = TMDB_BACKDROP_IMAGE_BASE_PATH + mMovie.getmBackdropImage();
         Picasso.with(this).load(backdropImagePath).into(mBackdropImageView);
-        mMovieTitleTextView.setText(mMovieOriginalTitle);
-        String posterImagePath = TMDB_POSTER_IMAGE_BASE_PATH + mMoviePoster;
+        mMovieTitleTextView.setText(mMovie.getmOriginalTitle());
+        String posterImagePath = TMDB_POSTER_IMAGE_BASE_PATH + mMovie.getmPosterImage();
         Picasso.with(this).load(posterImagePath).into(mMoviePosterTextView);
-        String friendlyDate = DateUtils.formatFriendlyDate(mMovieReleaseDate);
+        String friendlyDate = DateUtils.formatFriendlyDate(mMovie.getmReleaseDate());
         mReleaseDateTextView.setText(friendlyDate);
-        mVoteAverageTextView.setText(Double.toString(mMovieVoteAverage));
-        mPlotSynopsisTextView.setText(mMoviePlotSynopsis);
+        mVoteAverageTextView.setText(Double.toString(mMovie.getmUserRating()));
+        mPlotSynopsisTextView.setText(mMovie.getmPlotSynopsis());
     }
 
     /**
@@ -288,6 +248,8 @@ public class MovieDetailActivity extends AppCompatActivity
      */
     @Override
     public void onClick(View v) {
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(MovieListActivity.MOVIE_PARCELABLE_EXTRA_KEY, mMovie);
         if (isUserFavourite) { // The movie is in user favourite list, so need to delete it
             // Kick-off the loader to delete the movie from database via background thread
             LoaderManager loaderManager = getSupportLoaderManager();
@@ -295,9 +257,9 @@ public class MovieDetailActivity extends AppCompatActivity
             // Check if the Insert Loader already exists using the id, if exists then restarts
             // otherwise create one
             if (insertLoader == null) {
-                loaderManager.initLoader(DELETE_DATABASE_LOADER, mBundle, this);
+                loaderManager.initLoader(DELETE_DATABASE_LOADER, bundle, this);
             } else {
-                loaderManager.restartLoader(DELETE_DATABASE_LOADER, mBundle, this);
+                loaderManager.restartLoader(DELETE_DATABASE_LOADER, bundle, this);
             }
         } else { // The movie is not in user favourite list, so need to insert it
             // Kick-off the loader to insert the movie details to database via background thread
@@ -306,9 +268,9 @@ public class MovieDetailActivity extends AppCompatActivity
             // Check if the Insert Loader already exists using the id, if exists then restarts
             // otherwise create one
             if (insertLoader == null) {
-                loaderManager.initLoader(INSERT_DATABASE_LOADER, mBundle, this);
+                loaderManager.initLoader(INSERT_DATABASE_LOADER, bundle, this);
             } else {
-                loaderManager.restartLoader(INSERT_DATABASE_LOADER, mBundle, this);
+                loaderManager.restartLoader(INSERT_DATABASE_LOADER, bundle, this);
             }
         }
     }
@@ -350,16 +312,18 @@ public class MovieDetailActivity extends AppCompatActivity
                 if (data.equals(InsertDatabaseLoader.INSERT_INTO_FAVOURITE_MOVIE_SUCCESS)) {
                     isUserFavourite = true;
                     setUserFavouriteButtonColor(isUserFavourite);
-                    Toast.makeText(this, "Movie " + mMovieOriginalTitle +
-                            " added to favourite list", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this,
+                            getResources().getString(R.string.movie_insert_msg,
+                                    mMovie.getmOriginalTitle()), Toast.LENGTH_SHORT).show();
                 }
                 break;
             case DELETE_DATABASE_LOADER:
                 if (data.equals(DeleteDatabaseLoader.DELETE_FROM_FAVOURITE_MOVIE_SUCCESS)) {
                     isUserFavourite = false;
                     setUserFavouriteButtonColor(isUserFavourite);
-                    Toast.makeText(this, "Movie " + mMovieOriginalTitle +
-                            " removed from favourite list", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this,
+                            getResources().getString(R.string.movie_delete_msg,
+                                    mMovie.getmOriginalTitle()), Toast.LENGTH_SHORT).show();
                 }
                 break;
             case MOVIE_VIDEO_LOADER:
@@ -435,7 +399,7 @@ public class MovieDetailActivity extends AppCompatActivity
     @Override
     public void onReviewItemClick(int position) {
         Bundle bundle = new Bundle();
-        bundle.putString(MOVIE_REVIEW_TITLE_BUNDLE_EXTRA, mMovieOriginalTitle);
+        bundle.putString(MOVIE_REVIEW_TITLE_BUNDLE_EXTRA, mMovie.getmOriginalTitle());
         bundle.putString(MOVIE_REVIEW_AUTHOR_BUNDLE_EXTRA, mReviewList.get(position).getmAuthor());
         bundle.putString(MOVIE_REVIEW_CONTENT_BUNDLE_EXTRA, mReviewList.get(position).getmContent());
 

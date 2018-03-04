@@ -8,14 +8,14 @@
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp">
+        android:layout_marginBottom="@dimen/material_design_top_bottom_margin">
 
         <TextView
             android:id="@+id/tv_full_review_author_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginStart="@dimen/material_design_start_end_margin"
+            android:layout_marginTop="@dimen/material_design_top_bottom_margin"
             android:text="@string/review_author_label"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
@@ -25,8 +25,8 @@
             android:id="@+id/tv_full_review_author_data"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginStart="@dimen/material_design_start_end_margin"
+            android:layout_marginTop="@dimen/material_design_top_bottom_margin"
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@+id/tv_full_review_author_label"
             app:layout_constraintTop_toTopOf="parent"
@@ -36,8 +36,8 @@
             android:id="@+id/tv_full_review_content_data"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
+            android:layout_marginEnd="@dimen/material_design_start_end_margin"
+            android:layout_marginStart="@dimen/material_design_start_end_margin"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_full_review_author_data"
