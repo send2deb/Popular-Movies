@@ -12,7 +12,7 @@ App uses the following
 
 How to use the app
 -
-Clone the repo to your local machine. The app needs and API key of TMDb. If you do not have one then you can get from their [website](https://www.themoviedb.org/). Add your TMDb API key in 'gradle.properties' file (global or project) as below -
+Clone the repo to your local machine. The app needs an API key of TMDb. If you do not have one then you can get from their [website](https://www.themoviedb.org/). Add your TMDb API key in 'gradle.properties' file (global or project) as below -
 TmdbApiKey="your_api_key" and run the app.
 
 Screenshots
